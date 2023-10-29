@@ -13,6 +13,7 @@
 ```shell
 hugo new content post/my-first-post.md
 ```
+>注意：此时文件还是草稿状态，最终部署时不会发布到站点，需要将文件头内容`draft: true`改为false
 
 - 本地调试查看
 

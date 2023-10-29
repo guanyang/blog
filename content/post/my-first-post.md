@@ -2,12 +2,12 @@
 title: "My First Post"
 description: 
 date: 2023-10-29T16:31:22+08:00
-image: 
+image: img/cover.jpg
 math: 
 license: 
 hidden: false
 comments: true
-draft: true
+draft: false
 ---
 
 ## Introduction
