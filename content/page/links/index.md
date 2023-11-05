@@ -1,10 +1,16 @@
 ---
 title: Links
+description: 
+image: ../image/header/bg-1.jpg
 links:
-  - title: GitHub
-    description: GitHub is the world's largest software development platform.
-    website: https://github.com
+  - title: My GitHub
+    description: 从码农的世界路过，也只是一个过客！
+    website: https://github.com/guanyang
     image: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
+  - title: My Twitter
+    description: Where there is a will there is a way!
+    website: https://twitter.com/yangguansun
+    image: ../image/res/twitter-logo-black.png
 menu:
     main: 
         weight: 4
@@ -14,20 +20,8 @@ menu:
 comments: false
 ---
 
-To use this feature, add `links` section to frontmatter.
+The scenery we often see is that a person always looks up and envy the happiness of others, but finds that he is being looked up and envious. In fact, everyone is happy, but your happiness is often in the eyes of others.
 
-This page's frontmatter:
+Life is a one-way trip. Even if there are some regrets, we have no chance to start all over again. It is better to smile and cherish the future than to confuse the past, because life is not as if.
 
-```yaml
-links:
-  - title: GitHub
-    description: GitHub is the world's largest software development platform.
-    website: https://github.com
-    image: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
-  - title: TypeScript
-    description: TypeScript is a typed superset of JavaScript that compiles to plain JavaScript.
-    website: https://www.typescriptlang.org
-    image: ts-logo-128.jpg
-```
-
-`image` field accepts both local and external images.
+Don’t think too much, just do it now.
