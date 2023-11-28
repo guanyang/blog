@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>webflux on 三叶草的仲夏</title><link>https://blog.xcloudapi.com/tags/webflux/</link><description>Recent content in webflux on 三叶草的仲夏</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sun, 05 Nov 2023 16:38:08 +1100</lastBuildDate><atom:link href="https://blog.xcloudapi.com/tags/webflux/index.xml" rel="self" type="application/rss+xml"/><item><title>Spring Webflux使用subscribeOn和publishOn的最佳实践</title><link>https://blog.xcloudapi.com/p/spring-webflux%E4%BD%BF%E7%94%A8subscribeon%E5%92%8Cpublishon%E7%9A%84%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/</link><pubDate>Sun, 05 Nov 2023 16:38:08 +1100</pubDate><guid>https://blog.xcloudapi.com/p/spring-webflux%E4%BD%BF%E7%94%A8subscribeon%E5%92%8Cpublishon%E7%9A%84%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/</guid><description>&lt;img src="https://blog.xcloudapi.com/image/header/bg-3.jpg" alt="Featured image of post Spring Webflux使用subscribeOn和publishOn的最佳实践" />&lt;h3 id="概述">概述&lt;/h3>
+&lt;p>在Spring Webflux中，有两个关键的调度器操作符：&lt;code>publishOn&lt;/code>和&lt;code>subscribeOn&lt;/code>。理解它们的用途和差异是使用WebFlux进行反应式编程的重要部分。&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>subscribeOn&lt;/code>：这个操作符定义了产生数据的线程。无论在哪里放置subscribeOn，都只会影响源头的执行线程。如果在一个流的多个地方使用subscribeOn，只有第一个起作用。&lt;/li>
+&lt;li>&lt;code>publishOn&lt;/code>：这个操作符可以影响其后续操作运行的线程。如果在流中的多个地方使用publishOn，每个都会起作用，并且会改变其后续操作的执行线程。&lt;/li>
+&lt;/ul>
+&lt;h3 id="scheduler调度器">Scheduler调度器&lt;/h3>
+&lt;p>在&lt;code>Spring WebFlux&lt;/code>中，&lt;code>Scheduler&lt;/code>（调度器）是Project Reactor中的一个概念，它负责控制并发和线程切换。 主要有以下几种常见类型的Scheduler：&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>Schedulers.immediate()&lt;/code>：直接在当前线程执行任务，不进行线程切换。&lt;/li>
+&lt;li>&lt;code>Schedulers.single()&lt;/code>：创建一个只包含一个线程的调度器，所有任务都在这个单一线程上执行。如果这个线程出现故障，将创建一个新的线程替代它。&lt;/li>
+&lt;li>&lt;code>Schedulers.elastic()&lt;/code>：创建一个弹性的线程池，适用于IO阻塞操作比如数据库查询、文件读写等。该线程池会根据需要创建新的线程，如果线程闲置时间过长则会被销毁。弹性线程池可以无限大，所以要注意不要在大量计算密集型的任务中使用它，因为这可能导致创建大量线程，消耗过多系统资源。&lt;/li>
+&lt;li>&lt;code>Schedulers.parallel()&lt;/code>：创建一个固定大小的线程池，线程数量默认等于CPU核心数。适用于计算密集型任务，因为这类任务能够充分利用CPU资源。&lt;/li>
+&lt;li>&lt;code>Schedulers.boundedElastic()&lt;/code>：创建一个有界的弹性线程池，适合I/O任务。它与Schedulers.elastic()相似，但有最大线程数和队列大小的限制。&lt;/li>
+&lt;/ul>
+&lt;h3 id="publishon和subscribeon使用场景">&lt;code>publishOn&lt;/code>和&lt;code>subscribeOn&lt;/code>使用场景&lt;/h3>
+&lt;p>使用&lt;code>Scheduler&lt;/code>的方法主要是通过&lt;code>publishOn&lt;/code>和&lt;code>subscribeOn&lt;/code>两个操作符。&lt;/p>
+&lt;ul>
+&lt;li>使用&lt;code>publishOn&lt;/code>将数据流中后续的处理操作在parallel调度器对应的线程池中执行&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">flux.publishOn(Schedulers.parallel()).map(this::blockMethod)
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ul>
+&lt;li>使用&lt;code>subscribeOn&lt;/code>将源头的操作在boundedElastic调度器对应的线程池中执行&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">Mono.fromCallable(this::blockMethod).subscribeOn(Schedulers.boundedElastic())
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="两者的区别">两者的区别&lt;/h3>
+&lt;ul>
+&lt;li>&lt;code>publishOn&lt;/code>常用于切换执行下游操作符的线程，影响范围和它的位置有关。&lt;/li>
+&lt;li>&lt;code>subscribeOn&lt;/code>常用于切换源头数据生成的线程，影响范围则和位置无关。&lt;/li>
+&lt;/ul>
+&lt;h3 id="使用示例">使用示例&lt;/h3>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-java" data-lang="java">&lt;span class="line">&lt;span class="cl">&lt;span class="kn">import&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nn">org.junit.jupiter.api.Test&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="kn">import&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nn">reactor.core.publisher.Flux&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="kn">import&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nn">reactor.core.scheduler.Schedulers&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kd">class&lt;/span> &lt;span class="nc">PublishOnAndSubscribeOnTests&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nd">@Test&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kt">void&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nf">testPublishOnAndSubscribeOn&lt;/span>&lt;span class="p">()&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">Flux&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">just&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;Hello&amp;#34;&lt;/span>&lt;span class="p">).&lt;/span>&lt;span class="na">map&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">s&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">-&amp;gt;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">System&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">out&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">println&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;[1] Thread name: &amp;#34;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Thread&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">currentThread&lt;/span>&lt;span class="p">().&lt;/span>&lt;span class="na">getName&lt;/span>&lt;span class="p">());&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="k">return&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">s&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">concat&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34; World&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}).&lt;/span>&lt;span class="na">publishOn&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">Schedulers&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">newParallel&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;thread-publishOn&amp;#34;&lt;/span>&lt;span class="p">)).&lt;/span>&lt;span class="na">map&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">s&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">-&amp;gt;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">System&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">out&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">println&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;[2] Thread name: &amp;#34;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Thread&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">currentThread&lt;/span>&lt;span class="p">().&lt;/span>&lt;span class="na">getName&lt;/span>&lt;span class="p">());&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="k">return&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">s&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}).&lt;/span>&lt;span class="na">subscribeOn&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">Schedulers&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">newSingle&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;thread-subscribeOn&amp;#34;&lt;/span>&lt;span class="p">)).&lt;/span>&lt;span class="na">subscribe&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">s&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">-&amp;gt;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">System&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">out&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">println&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;[3] Thread name: &amp;#34;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Thread&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">currentThread&lt;/span>&lt;span class="p">().&lt;/span>&lt;span class="na">getName&lt;/span>&lt;span class="p">());&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">System&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">out&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">println&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">s&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">});&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ul>
+&lt;li>输入结果如下：&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">[1] Thread name: thread-subscribeOn-1
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">[2] Thread name: thread-publishOn-1
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">[3] Thread name: thread-publishOn-1
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Hello World
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ul>
+&lt;li>从上面的例子可以看出，&lt;code>subscribeOn&lt;/code>定义在&lt;code>publishOn&lt;/code>之后，但是却从源头开始生效。&lt;/li>
+&lt;li>而在&lt;code>publishOn&lt;/code>执行之后，线程池变更为&lt;code>publishOn&lt;/code>所定义的。&lt;/li>
+&lt;/ul>
+&lt;h3 id="总结">总结&lt;/h3>
+&lt;ul>
+&lt;li>在实际使用中，我们可以根据需要选择使用&lt;code>publishOn&lt;/code>或&lt;code>subscribeOn&lt;/code>，它们可以帮助我们更好地控制程序的并发行为和系统资源的利用。&lt;/li>
+&lt;li>然而，&lt;code>publishOn&lt;/code>与&lt;code>subscribeOn&lt;/code>也有一些局限性：&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">1.无法解决所有并发问题：虽然它们可以将任务移至其他线程执行，但如果你的程序设计本身就没有考虑到并发安全，那么使用这两者仍可能出现问题。
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">2.线程切换开销：每次通过publishOn或subscribeOn进行线程切换时，都会产生一定的系统开销。如果大量无谓的线程切换，可能会对性能产生负面影响。
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div></description></item><item><title>JDK21虚拟线程和webflux性能对决</title><link>https://blog.xcloudapi.com/p/jdk21%E8%99%9A%E6%8B%9F%E7%BA%BF%E7%A8%8B%E5%92%8Cwebflux%E6%80%A7%E8%83%BD%E5%AF%B9%E5%86%B3/</link><pubDate>Sun, 05 Nov 2023 16:25:08 +1800</pubDate><guid>https://blog.xcloudapi.com/p/jdk21%E8%99%9A%E6%8B%9F%E7%BA%BF%E7%A8%8B%E5%92%8Cwebflux%E6%80%A7%E8%83%BD%E5%AF%B9%E5%86%B3/</guid><description>&lt;img src="https://blog.xcloudapi.com/image/header/bg-2.jpg" alt="Featured image of post JDK21虚拟线程和webflux性能对决" />&lt;h3 id="概述">概述&lt;/h3>
+&lt;ul>
+&lt;li>虚拟线程是JDK 21中引入的一项重要特性，它是一种轻量级的线程实现，旨在提高Java应用程序的并发性能。&lt;/li>
+&lt;li>虚拟线程（Virtual Threads）也被称为纤程（Fibers），其基本的工作原理是将线程的调度从操作系统级别转移到用户级别，即由JVM控制。&lt;/li>
+&lt;li>Spring WebFlux是Spring Framework的一个模块，它提供了一种基于响应式编程模型的Web开发框架。&lt;/li>
+&lt;li>Spring WebFlux支持两种编程模型，分别是注解驱动和函数式编程。在注解驱动模型中，可以使用类似于Spring MVC的注解来定义请求处理方法，并利用Reactor提供的操作符和流式处理方式来处理请求和响应。在函数式编程模型中，可以使用一组函数式接口来定义路由和处理函数，以及利用Flux和Mono来处理异步数据流。&lt;/li>
+&lt;/ul>
+&lt;h3 id="虚拟线程和webflux的性能对决">虚拟线程和webflux的性能对决&lt;/h3>
+&lt;h4 id="环境及配置">环境及配置&lt;/h4>
+&lt;ul>
+&lt;li>Spring Boot: 3.1.4&lt;/li>
+&lt;li>JDK: graalvm-jdk-21&lt;/li>
+&lt;li>Docker Engine: 24.0.5&lt;/li>
+&lt;li>Docker Resource: 4C/8G&lt;/li>
+&lt;/ul>
+&lt;h4 id="压测源码镜像">压测源码&amp;amp;镜像&lt;/h4>
+&lt;ul>
+&lt;li>源码仓库：https://github.com/guanyang/spring-project-samples&lt;/li>
+&lt;li>虚拟线程源码示例：virtualthread-sample&lt;/li>
+&lt;li>webflux源码示例：webflux-sample&lt;/li>
+&lt;li>已构建示例镜像如下：&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">1.虚拟线程镜像: guanyangsunlight/spring-project-samples:virtualthread-sample-0.0.1-SNAPSHOT
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">2.webflux镜像：guanyangsunlight/spring-project-samples:webflux-sample-0.0.1-SNAPSHOT
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ul>
+&lt;li>http测试接口：${host}/hello/{timeMillis}, host为服务地址，timeMillis为模拟IO操作的时间，单位毫秒，响应示例如下：&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-json" data-lang="json">&lt;span class="line">&lt;span class="cl">&lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="err">msg:&lt;/span> &lt;span class="nt">&amp;#34;Hello World!&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="err">time:&lt;/span> &lt;span class="err">1695871679753,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="err">thread:&lt;/span> &lt;span class="nt">&amp;#34;VirtualThread[#59]/runnable@ForkJoinPool-1-worker-1&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h4 id="压测工具">压测工具&lt;/h4>
+&lt;ul>
+&lt;li>K6: 压测http请求，参考链接：&lt;a class="link" href="https://k6.io/docs/" target="_blank" rel="noopener"
+>https://k6.io/docs/&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;h4 id="压测场景case">压测场景case&lt;/h4>
+&lt;ul>
+&lt;li>Spring Boot虚拟线程: 性能指标（QPS、Avg Latency、P95）&lt;/li>
+&lt;li>Spring webflux响应式: 性能指标（QPS、Avg Latency、P95）&lt;/li>
+&lt;/ul>
+&lt;h4 id="k6压测">K6压测&lt;/h4>
+&lt;h5 id="压测脚本">压测脚本&lt;/h5>
+&lt;ul>
+&lt;li>总请求时长60s，并发从200开始，并按照200步长增长，命令如下：&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">k6 run -u 200 --duration 60s -e url=http://127.0.0.1:8081/hello/100 simple-test.js
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">-i：指定请求数量
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">-u：模拟并发数量
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">--duration：请求时长定义，例如：60s，1m
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">-e url：指定环境变量url，用于实际场景替换
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h5 id="simple-testjs脚本说明">&lt;code>simple-test.js&lt;/code>脚本说明&lt;/h5>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;span class="lnt">8
+&lt;/span>&lt;span class="lnt">9
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-gdscript3" data-lang="gdscript3">&lt;span class="line">&lt;span class="cl">&lt;span class="n">import&lt;/span> &lt;span class="n">http&lt;/span> &lt;span class="n">from&lt;/span> &lt;span class="s1">&amp;#39;k6/http&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">import&lt;/span> &lt;span class="p">{&lt;/span> &lt;span class="n">check&lt;/span> &lt;span class="p">}&lt;/span> &lt;span class="n">from&lt;/span> &lt;span class="s1">&amp;#39;k6&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">export&lt;/span> &lt;span class="n">default&lt;/span> &lt;span class="n">function&lt;/span> &lt;span class="p">()&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">const&lt;/span> &lt;span class="n">res&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">http&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">get&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="err">`&lt;/span>&lt;span class="o">$&lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="n">__ENV&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">url&lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="err">`&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">check&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">res&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s1">&amp;#39;is status 200&amp;#39;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="n">r&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">=&amp;gt;&lt;/span> &lt;span class="n">r&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">status&lt;/span> &lt;span class="o">===&lt;/span> &lt;span class="mi">200&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">});&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h5 id="压测docker实例">压测docker实例&lt;/h5>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">## 启用虚拟线程实例&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">docker run --name virtualthread-sample-vt -p 8081:8080 -e &lt;span class="nv">SPRING_EXECUTOR&lt;/span>&lt;span class="o">=&lt;/span>virtual -d guanyangsunlight/spring-project-samples:virtualthread-sample-0.0.1-SNAPSHOT
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">## 启用webflux实例&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">docker run --name webflux-sample -p 8083:8080 -d guanyangsunlight/spring-project-samples:webflux-sample-0.0.1-SNAPSHOT
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h5 id="k6压测结果">K6压测结果&lt;/h5>
+&lt;ul>
+&lt;li>QPS对比&lt;/li>
+&lt;/ul>
+&lt;p>&lt;img src="https://blog.xcloudapi.com/image/blog/QPS.png"
+loading="lazy"
+alt="QPS对比"
+>&lt;/p>
+&lt;ul>
+&lt;li>Avg Latency对比&lt;/li>
+&lt;/ul>
+&lt;p>&lt;img src="https://blog.xcloudapi.com/image/blog/Avg-Latency.png"
+loading="lazy"
+alt="Avg Latency对比"
+>&lt;/p>
+&lt;ul>
+&lt;li>详细数据&lt;/li>
+&lt;/ul>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>Case&lt;/th>
+&lt;th>QPS&lt;/th>
+&lt;th>Avg Latency&lt;/th>
+&lt;th>P95&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>Spring Boot虚拟线程,-u 200&lt;/td>
+&lt;td>1620.869685/s&lt;/td>
+&lt;td>123.09ms&lt;/td>
+&lt;td>149.42ms&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Spring Boot虚拟线程,-u 400&lt;/td>
+&lt;td>2634.599143/s&lt;/td>
+&lt;td>151.55ms&lt;/td>
+&lt;td>198.37ms&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Spring Boot虚拟线程,-u 600&lt;/td>
+&lt;td>3136.075961/s&lt;/td>
+&lt;td>186.44ms&lt;/td>
+&lt;td>256.03ms&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Spring Boot虚拟线程,-u 800&lt;/td>
+&lt;td>3780.654388/s&lt;/td>
+&lt;td>210.28ms&lt;/td>
+&lt;td>294.79ms&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Spring Boot虚拟线程,-u 1000&lt;/td>
+&lt;td>4250.384928/s&lt;/td>
+&lt;td>234.17ms&lt;/td>
+&lt;td>319.92ms&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Spring Boot虚拟线程,-u 1200&lt;/td>
+&lt;td>4479.450088/s&lt;/td>
+&lt;td>266.15ms&lt;/td>
+&lt;td>370.17ms&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Spring webflux响应式,-u 200&lt;/td>
+&lt;td>1826.774964/s&lt;/td>
+&lt;td>109.22ms&lt;/td>
+&lt;td>127.25ms&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Spring webflux响应式,-u 400&lt;/td>
+&lt;td>3516.072783/s&lt;/td>
+&lt;td>113.35ms&lt;/td>
+&lt;td>138.09ms&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Spring webflux响应式,-u 600&lt;/td>
+&lt;td>4868.593872/s&lt;/td>
+&lt;td>122.69ms&lt;/td>
+&lt;td>160.59ms&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Spring webflux响应式,-u 800&lt;/td>
+&lt;td>5852.713635/s&lt;/td>
+&lt;td>136.14ms&lt;/td>
+&lt;td>182.87ms&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Spring webflux响应式,-u 1000&lt;/td>
+&lt;td>5994.725404/s&lt;/td>
+&lt;td>166.09ms&lt;/td>
+&lt;td>255.77ms&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Spring webflux响应式,-u 1200&lt;/td>
+&lt;td>6878.047424/s&lt;/td>
+&lt;td>173.48ms&lt;/td>
+&lt;td>278.69ms&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h3 id="总结">总结&lt;/h3>
+&lt;p>Spring WebFlux和JDK虚拟线程是两种不同的技术，用于解决不同的问题，并具有不同的使用场景。下面是它们之间的对比及使用场景：&lt;/p>
+&lt;h4 id="两者对比">两者对比&lt;/h4>
+&lt;ul>
+&lt;li>&lt;strong>异步与同步&lt;/strong>：Spring WebFlux基于非阻塞I/O和异步处理方式，适用于需要处理大量并发请求和对响应时间要求较高的场景。而JDK虚拟线程可以看作是一种用户级线程，通过协程或轻量级线程实现并发编程，适用于需要处理大量任务和对资源利用率要求较高的场景。&lt;/li>
+&lt;li>&lt;strong>编程模型&lt;/strong>：Spring WebFlux提供了注解驱动和函数式编程两种编程模型，借助Reactor库来处理异步数据流。而JDK虚拟线程通常可以使用协程库（如Quasar）或并发框架（如CompletableFuture）来实现轻量级线程的功能。&lt;/li>
+&lt;li>&lt;strong>生态系统&lt;/strong>：Spring WebFlux是Spring Framework的一部分，与其他Spring组件和工具集成紧密，丰富的生态系统给开发人员带来便利。JDK虚拟线程的生态系统相对较小，可能缺乏一些成熟的库和工具支持。&lt;/li>
+&lt;li>&lt;strong>学习曲线&lt;/strong>：Spring WebFlux相对于传统的Servlet API和阻塞I/O模型有较陡峭的学习曲线，需要开发人员学习响应式编程和相关的Reactor库。JDK虚拟线程相对较容易上手。&lt;/li>
+&lt;/ul>
+&lt;h4 id="使用场景对比">使用场景对比&lt;/h4>
+&lt;ul>
+&lt;li>使用Spring WebFlux：&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">1.需要处理大量并发请求和对响应时间有较高要求的场景。
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">2.需要利用异步处理提高系统的吞吐量和响应性能。
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">3.希望借助Spring Framework的丰富生态系统来简化开发。
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ul>
+&lt;li>使用JDK虚拟线程：&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">1.需要处理大量任务和对资源利用率有较高要求的场景。
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">2.希望通过协程或轻量级线程实现更灵活、可控的并发编程。
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">3.需要快速启动和停止线程。
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;blockquote>
+&lt;p>需要根据具体的需求和项目情况来选择适合的技术。在某些场景下，可能也可以将两者结合使用，以充分发挥各自的优势。&lt;/p>
+&lt;/blockquote></description></item></channel></rss>

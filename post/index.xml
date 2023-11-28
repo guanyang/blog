@@ -1,0 +1,1747 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on 三叶草的仲夏</title><link>https://blog.xcloudapi.com/post/</link><description>Recent content in Posts on 三叶草的仲夏</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Tue, 28 Nov 2023 09:30:02 +0800</lastBuildDate><atom:link href="https://blog.xcloudapi.com/post/index.xml" rel="self" type="application/rss+xml"/><item><title>Spring Native与Quarkus对比分析</title><link>https://blog.xcloudapi.com/p/spring-native%E4%B8%8Equarkus%E5%AF%B9%E6%AF%94%E5%88%86%E6%9E%90/</link><pubDate>Sun, 05 Nov 2023 16:11:08 +0800</pubDate><guid>https://blog.xcloudapi.com/p/spring-native%E4%B8%8Equarkus%E5%AF%B9%E6%AF%94%E5%88%86%E6%9E%90/</guid><description>&lt;img src="https://blog.xcloudapi.com/image/header/cover-3.jpg" alt="Featured image of post Spring Native与Quarkus对比分析" />&lt;h3 id="概述">概述&lt;/h3>
+&lt;ul>
+&lt;li>Quarkus首页放出的标语：超音速亚原子的Java（Supersonic Subatomic Java），它是为&lt;code>OpenJDK HotSpot&lt;/code>和&lt;code>GraalVM&lt;/code>量身定制的&lt;code>Kubernetes Native Java&lt;/code>框架，基于同类最佳的 Java 库和标准制作而成。&lt;/li>
+&lt;li>Quarkus的到来为开发Linux容器和 kubernetes 原生Java微服务带来了一个创新平台。&lt;/li>
+&lt;li>Spring Boot是一个基于Java的框架，专注于企业应用，它可以简单使用所有Spring项目，并集成了许多开箱即用的功能，来帮助开发人员提高生产力。&lt;/li>
+&lt;li>Spring Boot由于其约定优于配置方法，它根据依赖项自动注册默认配置，大大缩短了Java应用程序的开发周期。&lt;/li>
+&lt;li>Java生态中新兴的技术体系
+&lt;ul>
+&lt;li>Spring Reactive(Spring WebFlux) → 背靠 Pivotal → 归属 VMware → 归属戴尔&lt;/li>
+&lt;li>Quarkus 和 Vert.x → 背靠 Eclipse 基金会 → 主要由 Red Hat 支持&lt;/li>
+&lt;li>Helidon → 背靠 Oracle&lt;/li>
+&lt;li>Micronaut → 背靠 Object Computing（Grails、OpenDDS）&lt;/li>
+&lt;li>Lagom → 背靠 Lightbend（Akka）&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>本文重点关注比较热门的&lt;code>Spring Reactive&lt;/code>和&lt;code>Quarkus&lt;/code>在原生镜像方面的差异。&lt;/li>
+&lt;/ul>
+&lt;h3 id="对比分析">对比分析&lt;/h3>
+&lt;ul>
+&lt;li>&lt;strong>创新和生态系统&lt;/strong>： Spring 有着长期的历史和丰富的生态系统，许多开发者对其已经非常熟悉。Spring Native 是 Spring 团队为了更好地适应云原生环境（如 Kubernetes）而推出的新项目。相比之下，Quarkus 较新，但它在设计上就考虑了现代云原生和微服务架构，因此在某些方面可能更具创新性。&lt;/li>
+&lt;li>&lt;strong>性能和资源利用&lt;/strong>： Quarkus 和 Spring Native 都声称可以提供更快的启动时间和减少的内存占用。然而，实际表现可能会因应用程序的具体情况以及你如何使用这些框架而变化。&lt;/li>
+&lt;li>&lt;strong>开发体验&lt;/strong>： Quarkus 提供的开发模式（live coding）允许开发者在不重启应用的情况下实时看到代码改变的效果，这可能会提高开发效率。Spring Native 则继承了 Spring Boot 的开发体验，使得许多开发者能够很快上手。&lt;/li>
+&lt;li>&lt;strong>兼容性&lt;/strong>： Spring Native 对于 Spring 生态中的部分库可能还存在兼容性问题，需要按照官方给出的指引进行调整。而 Quarkus 在设计时就尽可能考虑了广泛的兼容性，包括对于 Hibernate，Apache Camel，Eclipse MicroProfile 等开源库的支持。&lt;/li>
+&lt;/ul>
+&lt;h3 id="启动构建指标对比">启动&amp;amp;构建指标对比&lt;/h3>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>指标项&lt;/th>
+&lt;th>Spring Boot Native&lt;/th>
+&lt;th>Quarkus Native&lt;/th>
+&lt;th>Spring Boot JVM&lt;/th>
+&lt;th>Quarkus JVM&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>启动耗时（秒）&lt;/td>
+&lt;td>0.244&lt;/td>
+&lt;td>0.104&lt;/td>
+&lt;td>6.156&lt;/td>
+&lt;td>2.230&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>启动内存（MB）&lt;/td>
+&lt;td>44.31&lt;/td>
+&lt;td>9.05&lt;/td>
+&lt;td>237.1&lt;/td>
+&lt;td>119.1&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>启动CPU使用率（%）&lt;/td>
+&lt;td>-&lt;/td>
+&lt;td>-&lt;/td>
+&lt;td>0.22&lt;/td>
+&lt;td>0.26&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>构建镜像大小（MB）&lt;/td>
+&lt;td>119.89&lt;/td>
+&lt;td>84.75&lt;/td>
+&lt;td>217.92&lt;/td>
+&lt;td>421.24&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>构建时长（秒）&lt;/td>
+&lt;td>592&lt;/td>
+&lt;td>444&lt;/td>
+&lt;td>90&lt;/td>
+&lt;td>17.938&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h3 id="性能测试">性能测试&lt;/h3>
+&lt;h4 id="资源版本">资源版本&lt;/h4>
+&lt;ul>
+&lt;li>Mysql: 8.0.32-1.el8&lt;/li>
+&lt;li>Quarkus: 3.2.2.Final&lt;/li>
+&lt;li>Spring Boot: 3.1.2&lt;/li>
+&lt;li>JDK: 17.0.8&lt;/li>
+&lt;li>Docker Engine: 24.0.5&lt;/li>
+&lt;li>Docker Resource: 4C/8G&lt;/li>
+&lt;/ul>
+&lt;h4 id="压测源码镜像">压测源码&amp;amp;镜像&lt;/h4>
+&lt;ul>
+&lt;li>压测源码：https://github.com/guanyang/spring-project-samples
+&lt;ul>
+&lt;li>&lt;a class="link" href="https://github.com/guanyang/spring-project-samples/tree/main/native-sample" target="_blank" rel="noopener"
+>native-sample&lt;/a>: 基于spring native构建原生镜像示例&lt;/li>
+&lt;li>&lt;a class="link" href="https://github.com/guanyang/spring-project-samples/tree/main/quarkus-sample" target="_blank" rel="noopener"
+>quarkus-sample&lt;/a>: 基于quarkus构建原生镜像示例&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>镜像资源
+&lt;ul>
+&lt;li>Quarkus Native Image: guanyangsunlight/spring-project-samples:quarkus-sample-0.0.1-SNAPSHOT&lt;/li>
+&lt;li>Quarkus JVM Image: guanyangsunlight/spring-project-samples:quarkus-sample-0.0.1-SNAPSHOT-jvm&lt;/li>
+&lt;li>Spring Boot Native Image: guanyangsunlight/spring-project-samples:native-sample-0.0.1-SNAPSHOT&lt;/li>
+&lt;li>Spring Boot JVM Image: guanyangsunlight/spring-project-samples:native-sample-0.0.1-SNAPSHOT-jvm&lt;/li>
+&lt;li>MySQL Image: guanyangsunlight/spring-project-samples:sample-mysql-8.0.32&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>Docker Compose文件
+&lt;ul>
+&lt;li>&lt;a class="link" href="https://github.com/guanyang/spring-project-samples/blob/main/quarkus-sample/src/main/docker/docker-compose.yml" target="_blank" rel="noopener"
+>quarkus-sample&lt;/a>&lt;/li>
+&lt;li>&lt;a class="link" href="https://github.com/guanyang/spring-project-samples/blob/main/native-sample/src/main/docker/docker-compose.yml" target="_blank" rel="noopener"
+>native-sample&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;h4 id="压测架构">压测架构&lt;/h4>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">graph LR
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">A(K6施压机) --&amp;gt; B(应用容器)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">B --&amp;gt;C(MySQL容器)
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ul>
+&lt;li>应用容器：&lt;code>Spring Boot Native&lt;/code>,&lt;code>Quarkus Native&lt;/code>,&lt;code>Spring Boot JVM&lt;/code>,&lt;code>Quarkus JVM&lt;/code>每个一个实例&lt;/li>
+&lt;li>MySQL容器：Mysql8.0容器实例一个&lt;/li>
+&lt;li>K6施压机: 2.2 GHz 四核Intel Core i7,16 GB 1600 MHz DDR3&lt;/li>
+&lt;li>K6参考链接：&lt;a class="link" href="https://k6.io/docs/" target="_blank" rel="noopener"
+>https://k6.io/docs/&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;h4 id="压测场景case">压测场景case&lt;/h4>
+&lt;ul>
+&lt;li>Spring Boot Native: 性能指标（QPS、RT）,机器指标（CPU、内存）&lt;/li>
+&lt;li>Quarkus Native: 性能指标（QPS、RT）,机器指标（CPU、内存）&lt;/li>
+&lt;li>Spring Boot JVM: 性能指标（QPS、RT）,机器指标（CPU、内存）&lt;/li>
+&lt;li>Quarkus JVM: 性能指标（QPS、RT）,机器指标（CPU、内存）&lt;/li>
+&lt;/ul>
+&lt;h4 id="压测服务接口">压测服务接口&lt;/h4>
+&lt;ul>
+&lt;li>接口地址：${host}/api/test/get/{id}&lt;/li>
+&lt;li>接口说明：根据id查询数据库记录，host为服务地址，id为数据库记录主键&lt;/li>
+&lt;li>响应示例：&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">{
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &amp;#34;code&amp;#34;: 200,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &amp;#34;message&amp;#34;: &amp;#34;OK&amp;#34;,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &amp;#34;data&amp;#34;: {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &amp;#34;id&amp;#34;: 4,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &amp;#34;version&amp;#34;: 1,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &amp;#34;deleted&amp;#34;: 0,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &amp;#34;createBy&amp;#34;: &amp;#34;admin&amp;#34;,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &amp;#34;updateBy&amp;#34;: &amp;#34;admin&amp;#34;,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &amp;#34;createTime&amp;#34;: 1695312514000,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &amp;#34;updateTime&amp;#34;: 1695312532000,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &amp;#34;username&amp;#34;: &amp;#34;test41&amp;#34;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h4 id="压测脚本">压测脚本&lt;/h4>
+&lt;ul>
+&lt;li>总请求时长300s，并发从50开始，并按照50步长增长，命令如下：&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">k6 run -u 50 --duration 300s -e url=http://127.0.0.1:8082/api/test/get/4 simple-test.js
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">-i：指定请求数量
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">-u：模拟并发数量
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">--duration：请求时长定义，例如：60s，1m
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">-e url：指定环境变量url，用于实际场景替换
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ul>
+&lt;li>脚本输出样例&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl"> scenarios: (100.00%) 1 scenario, 50 max VUs, 36s max duration (incl. graceful stop):
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> * default: 50 looping VUs for 6s (gracefulStop: 30s)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ✓ is status 200
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> checks.........................: 100.00% ✓ 7761 ✗ 0
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> data_received..................: 1.9 MB 324 kB/s
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> data_sent......................: 730 kB 121 kB/s
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> http_req_blocked...............: avg=12.22µs min=1µs med=3µs max=3.26ms p(90)=5µs p(95)=6µs
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> http_req_connecting............: avg=7.1µs min=0s med=0s max=2.19ms p(90)=0s p(95)=0s
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> http_req_duration..............: avg=38.56ms min=7.55ms med=34.26ms max=216.77ms p(90)=58.96ms p(95)=68.51ms
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> { expected_response:true }...: avg=38.56ms min=7.55ms med=34.26ms max=216.77ms p(90)=58.96ms p(95)=68.51ms
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> http_req_failed................: 0.00% ✓ 0 ✗ 7761
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> http_req_receiving.............: avg=52.57µs min=19µs med=46µs max=680µs p(90)=81µs p(95)=97µs
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> http_req_sending...............: avg=19.87µs min=7µs med=16µs max=1.27ms p(90)=27µs p(95)=38µs
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> http_req_tls_handshaking.......: avg=0s min=0s med=0s max=0s p(90)=0s p(95)=0s
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> http_req_waiting...............: avg=38.49ms min=7.51ms med=34.18ms max=216.58ms p(90)=58.89ms p(95)=68.46ms
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> http_reqs......................: 7761 1288.780058/s
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> iteration_duration.............: avg=38.7ms min=7.76ms med=34.4ms max=218.51ms p(90)=59.08ms p(95)=68.64ms
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> iterations.....................: 7761 1288.780058/s
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> vus............................: 50 min=50 max=50
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> vus_max........................: 50 min=50 max=50
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ul>
+&lt;li>&lt;code>simple-test.js&lt;/code>脚本说明&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;span class="lnt">8
+&lt;/span>&lt;span class="lnt">9
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-gdscript3" data-lang="gdscript3">&lt;span class="line">&lt;span class="cl">&lt;span class="n">import&lt;/span> &lt;span class="n">http&lt;/span> &lt;span class="n">from&lt;/span> &lt;span class="s1">&amp;#39;k6/http&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">import&lt;/span> &lt;span class="p">{&lt;/span> &lt;span class="n">check&lt;/span> &lt;span class="p">}&lt;/span> &lt;span class="n">from&lt;/span> &lt;span class="s1">&amp;#39;k6&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">export&lt;/span> &lt;span class="n">default&lt;/span> &lt;span class="n">function&lt;/span> &lt;span class="p">()&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">const&lt;/span> &lt;span class="n">res&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">http&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">get&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="err">`&lt;/span>&lt;span class="o">$&lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="n">__ENV&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">url&lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="err">`&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">check&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">res&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s1">&amp;#39;is status 200&amp;#39;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="n">r&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">=&amp;gt;&lt;/span> &lt;span class="n">r&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">status&lt;/span> &lt;span class="o">===&lt;/span> &lt;span class="mi">200&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">});&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h4 id="压测指标">压测指标&lt;/h4>
+&lt;h5 id="被压机器指标">被压机器指标&lt;/h5>
+&lt;ul>
+&lt;li>CPU usage&lt;/li>
+&lt;li>Memory usage&lt;/li>
+&lt;/ul>
+&lt;h5 id="被压机器性能指标">被压机器性能指标&lt;/h5>
+&lt;ul>
+&lt;li>QPS&lt;/li>
+&lt;li>Avg Latency(ms)&lt;/li>
+&lt;li>P95(ms)&lt;/li>
+&lt;/ul>
+&lt;h4 id="压测结果">压测结果&lt;/h4>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>Case&lt;/th>
+&lt;th>QPS&lt;/th>
+&lt;th>Avg Latency&lt;/th>
+&lt;th>P95&lt;/th>
+&lt;th>CPU usage&lt;/th>
+&lt;th>Memory usage&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>Quarkus Native,-u 50&lt;/td>
+&lt;td>1699.067212/s&lt;/td>
+&lt;td>29.41ms&lt;/td>
+&lt;td>50.07ms&lt;/td>
+&lt;td>136.91%&lt;/td>
+&lt;td>23.15MB&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Quarkus Native,-u 100&lt;/td>
+&lt;td>1749.35664/s&lt;/td>
+&lt;td>57.14ms&lt;/td>
+&lt;td>89.9ms&lt;/td>
+&lt;td>148.9%&lt;/td>
+&lt;td>23.95MB&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Quarkus Native,-u 200&lt;/td>
+&lt;td>1765.832527/s&lt;/td>
+&lt;td>113.23ms&lt;/td>
+&lt;td>167.43ms&lt;/td>
+&lt;td>156.17%&lt;/td>
+&lt;td>25.5MB&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Spring Boot Native,-u 50&lt;/td>
+&lt;td>1114.946899/s&lt;/td>
+&lt;td>44.82ms&lt;/td>
+&lt;td>85.11ms&lt;/td>
+&lt;td>226.5%&lt;/td>
+&lt;td>86.23MB&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Spring Boot Native,-u 100&lt;/td>
+&lt;td>1175.220721/s&lt;/td>
+&lt;td>85.06ms&lt;/td>
+&lt;td>137.26ms&lt;/td>
+&lt;td>236.07%&lt;/td>
+&lt;td>96.16MB&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Spring Boot Native,-u 200&lt;/td>
+&lt;td>1094.461679/s&lt;/td>
+&lt;td>182.67ms&lt;/td>
+&lt;td>284.98ms&lt;/td>
+&lt;td>246.32%&lt;/td>
+&lt;td>143.3MB&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Quarkus JVM,-u 50&lt;/td>
+&lt;td>2149.507697/s&lt;/td>
+&lt;td>23.24ms&lt;/td>
+&lt;td>39ms&lt;/td>
+&lt;td>111.99%&lt;/td>
+&lt;td>173.6MB&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Quarkus JVM,-u 100&lt;/td>
+&lt;td>2186.80721/s&lt;/td>
+&lt;td>45.7m&lt;/td>
+&lt;td>69.6ms&lt;/td>
+&lt;td>126.62%&lt;/td>
+&lt;td>174.2MB&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Quarkus JVM,-u 200&lt;/td>
+&lt;td>2211.63056/s&lt;/td>
+&lt;td>90.38ms&lt;/td>
+&lt;td>130.41ms&lt;/td>
+&lt;td>125.45%&lt;/td>
+&lt;td>180.1MB&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Spring Boot JVM,-u 50&lt;/td>
+&lt;td>1472.76853/s&lt;/td>
+&lt;td>33.93ms&lt;/td>
+&lt;td>65.69ms&lt;/td>
+&lt;td>199.08%&lt;/td>
+&lt;td>426.8MB&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Spring Boot JVM,-u 100&lt;/td>
+&lt;td>1624.997761/s&lt;/td>
+&lt;td>61.51ms&lt;/td>
+&lt;td>97.37ms&lt;/td>
+&lt;td>211.01%&lt;/td>
+&lt;td>427.2MB&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Spring Boot JVM,-u 200&lt;/td>
+&lt;td>1611.01646/s&lt;/td>
+&lt;td>124.05ms&lt;/td>
+&lt;td>188.24ms&lt;/td>
+&lt;td>214.96%&lt;/td>
+&lt;td>428.1MB&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h4 id="压测总结">压测总结&lt;/h4>
+&lt;ul>
+&lt;li>Quarkus Native相较于Spring Boot Native资源消耗更低，性能更好。&lt;/li>
+&lt;li>Quarkus JVM相较于Spring Boot JVM模式资源消耗更低，性能更好。&lt;/li>
+&lt;li>Native原生相较于JVM模式整体资源消耗更低，启动更快，构建镜像更小。&lt;/li>
+&lt;/ul>
+&lt;h3 id="优缺点及选型总结">优缺点及选型总结&lt;/h3>
+&lt;h4 id="quarkus优缺点">Quarkus优缺点&lt;/h4>
+&lt;ul>
+&lt;li>优点
+&lt;ul>
+&lt;li>高度优化的运行时性能和内存管理；&lt;/li>
+&lt;li>对于开发者友好的开发模式，如实时编程（live coding）；&lt;/li>
+&lt;li>广泛的兼容性，支持许多主流的 Java 开源库；&lt;/li>
+&lt;li>面向云原生应用的设计。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>缺点
+&lt;ul>
+&lt;li>相对于 Spring，其社区规模还较小，可能在某些问题上找不到即时的帮助；&lt;/li>
+&lt;li>尽管有广泛的兼容性，但并不包括所有的 Java 库。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;h4 id="spring-boot-native优缺点">Spring Boot Native优缺点&lt;/h4>
+&lt;ul>
+&lt;li>优点
+&lt;ul>
+&lt;li>建立在 Spring 生态系统之上，易于为已经使用 Spring 的团队接受；&lt;/li>
+&lt;li>与 Spring Boot 无缝集成，并且借助 GraalVM 提供媲美本机语言的启动速度和内存占用。&lt;/li>
+&lt;li>支持 AOT（Ahead-of-Time Compilation）编译，可以提高启动速度。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>缺点
+&lt;ul>
+&lt;li>使用 Spring Boot Native 需要适应其构建过程中将应用程序转化为本地应用程序的复杂性；&lt;/li>
+&lt;li>构建完成的应用程序虽然启动速度快、内存消耗低，但CPU使用率高于普通 JVM 程序。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;h4 id="技术选型思考">技术选型思考&lt;/h4>
+&lt;ul>
+&lt;li>
+&lt;p>&lt;strong>项目需求&lt;/strong>：如果项目需要快速启动，低内存消耗，那么两者都可以满足。如果已经在使用 Spring Stack，并且想要继续保持使用它，那么 Spring Boot Native 会更加合适。如果项目对开发效率有高要求，那么 Quarkus 可能更符合需求。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>团队技能&lt;/strong>：如果团队成员已经非常熟悉 Spring Stack，那么采用 Spring Boot Native 可能可以减少学习曲线。反之，如果团队愿意尝试新的技术，并且对响应式编程和函数式编程有兴趣，那么选择 Quarkus 可以是一个不错的选择。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>社区支持和文档&lt;/strong>：Spring 社区非常活跃，有大量的教程和指南。虽然 Quarkus 比较新，但也在积极扩大其社区，并提供了详细的文档。&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;blockquote>
+&lt;p>在实际决策过程中，最好能够根据具体情况进行技术选型，可能的话，可以在小规模的项目或者原型中尝试并评估这些框架。&lt;/p>
+&lt;/blockquote>
+&lt;h3 id="quarkus对spring开发者的额外好处">Quarkus对Spring开发者的额外好处&lt;/h3>
+&lt;ul>
+&lt;li>&lt;strong>功能即服务 (FaaS)&lt;/strong>：当编译为原生二进制文件时，Quarkus 应用程序可以在 0.0015 秒内启动，从而可以将现有的 Spring 和 Java API 知识与 FaaS 功能结合使用。（&lt;a class="link" href="https://quarkus.io/guides/azure-functions" target="_blank" rel="noopener"
+>Azure&lt;/a>,&lt;a class="link" href="https://quarkus.io/guides/aws-lambda" target="_blank" rel="noopener"
+>AWS Lambda&lt;/a>）&lt;/li>
+&lt;li>&lt;strong>实时编码&lt;/strong>：从“Hello World”示例应用程序开始，然后将其转换为复杂的微服务，而无需重新启动应用程序。只需保存并重新加载浏览器即可查看沿途的变化。 Quarkus 实时编码“开箱即用”，与 IDE 无关。&lt;/li>
+&lt;li>&lt;strong>支持反应式和命令式模型&lt;/strong>：Quarkus有一个反应式核心，支持传统的命令式模型、反应式模型，或在同一应用程序中同时支持两者。&lt;/li>
+&lt;li>&lt;strong>早期检测依赖注入错误&lt;/strong>：Quarkus 在编译期间而不是在运行时捕获依赖项注入错误。&lt;/li>
+&lt;li>&lt;strong>最佳框架和标准的结合&lt;/strong>：Quarkus 在同一应用程序中支持 Spring API 兼容性、Eclipse Vert.x、MicroProfile（JAX-RS、CDI 等）、反应式流和消息传递等。参考《&lt;a class="link" href="https://developers.redhat.com/blog/2019/10/02/autowire-microprofile-into-spring-with-quarkus" target="_blank" rel="noopener"
+>Autowire MicroProfile into Spring Boot&lt;/a>》，可以在一个项目中同时使用 Spring 和 MicroProfile API。&lt;/li>
+&lt;/ul>
+&lt;h3 id="参考文档">参考文档&lt;/h3>
+&lt;ul>
+&lt;li>&lt;a class="link" href="https://www.baeldung.com/spring-boot-vs-quarkus" target="_blank" rel="noopener"
+>【Baeldung】Spring Boot vs Quarkus&lt;/a>&lt;/li>
+&lt;li>&lt;a class="link" href="https://www.logicmonitor.com/blog/quarkus-vs-spring#h-about-logicmonitor" target="_blank" rel="noopener"
+>【LogicMonitor】Quarkus vs Spring Boot&lt;/a>&lt;/li>
+&lt;li>&lt;a class="link" href="https://quarkus.io/blog/quarkus-for-spring-developers/" target="_blank" rel="noopener"
+>Quarkus for Spring Developers&lt;/a>&lt;/li>
+&lt;li>&lt;a class="link" href="https://quarkus.io/guides/" target="_blank" rel="noopener"
+>Quarkus官方文档&lt;/a>&lt;/li>
+&lt;li>&lt;a class="link" href="https://quarkus.io/get-started/" target="_blank" rel="noopener"
+>Quarkus入门指南&lt;/a>&lt;/li>
+&lt;li>&lt;a class="link" href="https://code.quarkus.io/" target="_blank" rel="noopener"
+>Quarkus官方代码生成&lt;/a>&lt;/li>
+&lt;li>&lt;a class="link" href="https://docs.spring.io/spring-boot/docs/3.1.2/maven-plugin/reference/html/#build-image" target="_blank" rel="noopener"
+>Create an OCI image&lt;/a>&lt;/li>
+&lt;li>&lt;a class="link" href="https://docs.spring.io/spring-boot/docs/3.1.2/reference/html/native-image.html#native-image" target="_blank" rel="noopener"
+>GraalVM Native Image Support&lt;/a>&lt;/li>
+&lt;li>[Building a Reactive RESTful Web Service](https://spr&lt;/li>
+&lt;/ul></description></item><item><title>程序员必须要了解的项目管理常识</title><link>https://blog.xcloudapi.com/p/%E7%A8%8B%E5%BA%8F%E5%91%98%E5%BF%85%E9%A1%BB%E8%A6%81%E4%BA%86%E8%A7%A3%E7%9A%84%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86%E5%B8%B8%E8%AF%86/</link><pubDate>Tue, 28 Nov 2023 09:30:02 +0800</pubDate><guid>https://blog.xcloudapi.com/p/%E7%A8%8B%E5%BA%8F%E5%91%98%E5%BF%85%E9%A1%BB%E8%A6%81%E4%BA%86%E8%A7%A3%E7%9A%84%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86%E5%B8%B8%E8%AF%86/</guid><description>&lt;img src="https://blog.xcloudapi.com/image/header/bg-3.jpg" alt="Featured image of post 程序员必须要了解的项目管理常识" />&lt;h3 id="概述">概述&lt;/h3>
+&lt;ul>
+&lt;li>项目管理就是将各种知识、技能、工具与技术应用于项目活动，以满足项目的要求。——《项目管理知识体系指南》&lt;/li>
+&lt;li>由于项目管理的知识体系过于庞大，PMI 把它分为项目管理五大过程组和十大知识领域，共 49 个子过程。
+&lt;img src="https://blog.xcloudapi.com/image/blog/%e9%a1%b9%e7%9b%ae%e7%ae%a1%e7%90%86-%e5%8d%81%e5%a4%a7%e7%9f%a5%e8%af%86%e9%a2%86%e5%9f%9f.png"
+loading="lazy"
+alt="项目管理知识体系"
+>&lt;/li>
+&lt;/ul>
+&lt;h3 id="项目管理十大领域划分">项目管理十大领域划分&lt;/h3>
+&lt;ul>
+&lt;li>项目管理的十大领域，将项目管理的工作内容划分为：整合管理、范围管理、时间管理、成本管理、质量管理、人力资源管理、沟通管理、干系人管理、风险管理和采购管理。&lt;/li>
+&lt;li>其中，进度、成本、质量、范围是 4 个核心领域，风险、沟通、采购、资源、干系人管理是 5 个辅助领域和 1 个整体领域。
+&lt;img src="https://blog.xcloudapi.com/image/blog/%e9%a1%b9%e7%9b%ae%e7%ae%a1%e7%90%86-%e5%8d%81%e5%a4%a7%e9%a2%86%e5%9f%9f02.png"
+loading="lazy"
+alt="项目管理十大领域"
+>&lt;/li>
+&lt;/ul>
+&lt;h3 id="项目管理五大过程组">项目管理五大过程组&lt;/h3>
+&lt;ul>
+&lt;li>
+&lt;p>项目管理五大过程组，是项目管理的核心内容，是项目管理的四个核心领域的集合。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>PMI 遵循&lt;code>PDCA&lt;/code>的法则，将所有的项目管理活动分成了五大过程组，分别是&lt;strong>启动过程组&lt;/strong>、&lt;strong>规划过程组&lt;/strong>、&lt;strong>执行过程组&lt;/strong>、&lt;strong>监控过程组&lt;/strong>和&lt;strong>收尾过程组&lt;/strong>。如下图所示：
+&lt;img src="https://blog.xcloudapi.com/image/blog/%e9%a1%b9%e7%9b%ae%e7%ae%a1%e7%90%86-%e4%ba%94%e5%a4%a7%e8%bf%87%e7%a8%8b%e7%bb%84.png"
+loading="lazy"
+alt="项目管理五大过程组"
+>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>启动过程组（千里之行，始于足下）&lt;/p>
+&lt;ul>
+&lt;li>启动过程组意味着正式开始一个项目，或者是开始一个项目中的新阶段，包括识别干系人和制定项目章程两个子过程。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>规划过程组（运筹帷幄，决胜千里）&lt;/p>
+&lt;ul>
+&lt;li>你需要根据预期目标，明确项目范围，确定项目的里程碑阶段目标，为项目的执行做好各项准备。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>执行过程组（言出必行，行之必果）&lt;/p>
+&lt;ul>
+&lt;li>这个阶段重在整合资源，推进项目落地，完成项目管理计划中确定的工作以实现项目目标。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>监控过程组（审时度势，沉着应变）&lt;/p>
+&lt;ul>
+&lt;li>你需要定期对项目的进展、范围、质量等进行跟踪和监控，识别目前的进度与计划之间的偏差，从而快速准确地采取办法进行纠正和调整。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>收尾过程组（慎终如始，则无败事）&lt;/p>
+&lt;ul>
+&lt;li>在这个阶段，你要交付项目成果，组织团队的回顾复盘，归档所有文档等组织过程资产，正式结束一个项目或阶段。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;h3 id="项目管理五大过程组的工作内容">项目管理五大过程组的工作内容&lt;/h3>
+&lt;p>&lt;img src="https://blog.xcloudapi.com/image/blog/%e9%a1%b9%e7%9b%ae%e7%ae%a1%e7%90%86-%e4%ba%94%e5%a4%a7%e8%bf%87%e7%a8%8b%e7%bb%8403.png"
+loading="lazy"
+alt="项目管理五大过程组工作内容"
+>&lt;/p></description></item><item><title>程序员做项目管理的几大误区</title><link>https://blog.xcloudapi.com/p/%E7%A8%8B%E5%BA%8F%E5%91%98%E5%81%9A%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86%E7%9A%84%E5%87%A0%E5%A4%A7%E8%AF%AF%E5%8C%BA/</link><pubDate>Tue, 28 Nov 2023 09:25:54 +0800</pubDate><guid>https://blog.xcloudapi.com/p/%E7%A8%8B%E5%BA%8F%E5%91%98%E5%81%9A%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86%E7%9A%84%E5%87%A0%E5%A4%A7%E8%AF%AF%E5%8C%BA/</guid><description>&lt;img src="https://blog.xcloudapi.com/image/header/bg-2.jpg" alt="Featured image of post 程序员做项目管理的几大误区" />&lt;h3 id="背景">背景&lt;/h3>
+&lt;ul>
+&lt;li>项目是为创造独特的产品、服务或成果而进行的临时性工作。&lt;/li>
+&lt;li>项目的特点是：独特的产品、服务或成果，临时性工作，项目驱动变更，创造价值。&lt;/li>
+&lt;li>项目管理就是将知识、技能、工具与技术应用于项目活动，以满足项目的要求。&lt;/li>
+&lt;/ul>
+&lt;h3 id="程序员做项目管理的误区">程序员做项目管理的误区&lt;/h3>
+&lt;h4 id="误区-1凡事恨不得事必躬亲">误区 1：凡事恨不得事必躬亲&lt;/h4>
+&lt;ul>
+&lt;li>遇到事情时，你不要自己直接去做，而是要想办法驱动他人去做好事情。&lt;/li>
+&lt;li>你需要讲清楚为什么要做，为什么要现在做，获取理解及认同，激发团队的动力，同时为每个任务选择能力匹配的授权对象。&lt;/li>
+&lt;li>成功施加影响的三个层次：&lt;strong>让人知道要做（Awareness）&lt;/strong>、&lt;strong>有动力做（Desire）&lt;strong>和&lt;/strong>有能力做（Ability）&lt;/strong>。&lt;/li>
+&lt;/ul>
+&lt;h4 id="误区2追着别人做监工">误区2：追着别人做监工&lt;/h4>
+&lt;ul>
+&lt;li>做项目管理，不是要你变成监工，而是要你带领团队明确目标，建立机制，并让这个机制运转起来，要始终依靠流程和规则来约束大家的行为。&lt;/li>
+&lt;li>如果项目团队成员多了，你每天追着成员不停询问进度，那么终将精疲力尽而错失项目全局把控，同时也会招来项目成员因为项目紧张而被你反复追问的不满情绪。&lt;/li>
+&lt;li>重要的是要建立&lt;strong>项目的沟通及反馈机制&lt;/strong>，保障项目的高效运转及风险提前预警。&lt;/li>
+&lt;/ul>
+&lt;h4 id="误区-3拿着锤子看哪里都是钉子">误区 3：拿着锤子，看哪里都是钉子&lt;/h4>
+&lt;ul>
+&lt;li>每个项目的现有执行方式，都有它本身的背景和成因，你要与项目中的重要干系人加强沟通，理解前因后果，从项目和团队当前的真实痛点出发，找到真正解决问题的方法和步骤。&lt;/li>
+&lt;li>可能有些程序员本身是技术骨干出身，对业务或者专业技能比较精通，老是觉得别人做的不够好，需要敲打一下，很多有技术洁癖的人都有这样的想法。想法固然很好，但是你没有三头六臂，抵不过团队的力量。&lt;/li>
+&lt;li>需要转变观念，相信团队协作的力量远大于个人的累死累活，帮助攻克项目难点，提前预知项目风险，协调运转团队资源才是重中之重。&lt;/li>
+&lt;/ul>
+&lt;h3 id="总结">总结&lt;/h3>
+&lt;ul>
+&lt;li>项目管理最重要的是思想的转变，一个人的力量毕竟有限，充分发挥出团队的执行力才是重中之重。&lt;/li>
+&lt;li>项目管理的重点不是管控，而是让人理解为什么要做这个项目，做这个项目的目标动力以及选择能力匹配的授权对象来落地执行。&lt;/li>
+&lt;/ul></description></item><item><title>JDK21虚拟线程原理及实践</title><link>https://blog.xcloudapi.com/p/jdk21%E8%99%9A%E6%8B%9F%E7%BA%BF%E7%A8%8B%E5%8E%9F%E7%90%86%E5%8F%8A%E5%AE%9E%E8%B7%B5/</link><pubDate>Sun, 05 Nov 2023 16:18:08 +0800</pubDate><guid>https://blog.xcloudapi.com/p/jdk21%E8%99%9A%E6%8B%9F%E7%BA%BF%E7%A8%8B%E5%8E%9F%E7%90%86%E5%8F%8A%E5%AE%9E%E8%B7%B5/</guid><description>&lt;img src="https://blog.xcloudapi.com/image/header/bg-1.jpg" alt="Featured image of post JDK21虚拟线程原理及实践" />&lt;h3 id="概述">概述&lt;/h3>
+&lt;ul>
+&lt;li>JDK21已于2023年9月19日发布，作为Oracle标准Java实现的一个LTS版本发布，发布了15想新特性，其中虚拟线程呼声较高。&lt;/li>
+&lt;li>虚拟线程是JDK 21中引入的一项重要特性，它是一种轻量级的线程实现，旨在提高Java应用程序的并发性能。&lt;/li>
+&lt;/ul>
+&lt;h3 id="工作原理">工作原理&lt;/h3>
+&lt;ul>
+&lt;li>虚拟线程（Virtual Threads）也被称为纤程（Fibers），其基本的工作原理是将线程的调度从操作系统级别转移到用户级别，即由JVM控制。&lt;/li>
+&lt;li>在传统的线程模型中，每个线程都对应一个操作系统级别的线程，这种线程的创建、切换和销毁等操作都需要系统调用，消耗较大。而且，每个线程都需要一个完整的线程栈，这限制了同时运行的线程数量。&lt;/li>
+&lt;li>相比之下，虚拟线程并不直接对应一个操作系统级别的线程，而是由JVM管理和调度。多个虚拟线程可能共享一个操作系统级别的线程。这样，当一个虚拟线程阻塞时，JVM可以立即切换到另一个虚拟线程，而无需等待操作系统的调度。而且，虚拟线程不需要一个完整的线程栈，所以可以创建大量的虚拟线程。&lt;/li>
+&lt;li>JDK 的虚拟线程调度器是一个以&lt;code>FIFO&lt;/code>模式运行的&lt;code>ForkJoinPool&lt;/code>，调度器可以通过设置启动参数调整，代码如下：&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-java" data-lang="java">&lt;span class="line">&lt;span class="cl">&lt;span class="kd">private&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kd">static&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">ForkJoinPool&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nf">createDefaultScheduler&lt;/span>&lt;span class="p">()&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">ForkJoinWorkerThreadFactory&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">factory&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">pool&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">-&amp;gt;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">PrivilegedAction&lt;/span>&lt;span class="o">&amp;lt;&lt;/span>&lt;span class="n">ForkJoinWorkerThread&lt;/span>&lt;span class="o">&amp;gt;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">pa&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">()&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">-&amp;gt;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">new&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">CarrierThread&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">pool&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="k">return&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">AccessController&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">doPrivileged&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">pa&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">};&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">PrivilegedAction&lt;/span>&lt;span class="o">&amp;lt;&lt;/span>&lt;span class="n">ForkJoinPool&lt;/span>&lt;span class="o">&amp;gt;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">pa&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">()&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">-&amp;gt;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kt">int&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">parallelism&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">maxPoolSize&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">minRunnable&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">String&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">parallelismValue&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">System&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">getProperty&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;jdk.virtualThreadScheduler.parallelism&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">String&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">maxPoolSizeValue&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">System&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">getProperty&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;jdk.virtualThreadScheduler.maxPoolSize&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">String&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">minRunnableValue&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">System&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">getProperty&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;jdk.virtualThreadScheduler.minRunnable&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">...&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="c1">//省略赋值操作&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">Thread&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">UncaughtExceptionHandler&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">handler&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">t&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">e&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">-&amp;gt;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">};&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kt">boolean&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">asyncMode&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kc">true&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="c1">// FIFO&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="k">return&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">new&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">ForkJoinPool&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">parallelism&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">factory&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">handler&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">asyncMode&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">0&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">maxPoolSize&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">minRunnable&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">pool&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">-&amp;gt;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kc">true&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">30&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">SECONDS&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">};&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="k">return&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">AccessController&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">doPrivileged&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">pa&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ul>
+&lt;li>调度器分配给虚拟线程的平台线程称为虚拟线程的载体线程（carrier）。虚拟线程可以在其生命周期内会被安排在不同的载体线程上。&lt;/li>
+&lt;li>传统线程池与&lt;code>OS Thread&lt;/code>的关系：&lt;/li>
+&lt;/ul>
+&lt;p>&lt;img src="https://blog.xcloudapi.com/image/blog/platform-thread.jpg"
+loading="lazy"
+alt="传统线程池"
+>&lt;/p>
+&lt;ul>
+&lt;li>虚拟线程&lt;code>VirtualThread&lt;/code>与&lt;code>Platform Thread&lt;/code>, &lt;code>OS Thread&lt;/code>的关系：&lt;/li>
+&lt;/ul>
+&lt;p>&lt;img src="https://blog.xcloudapi.com/image/blog/virtual-thread.jpg"
+loading="lazy"
+alt="虚拟线程"
+>&lt;/p>
+&lt;ul>
+&lt;li>虚拟线程在执行到&lt;code>IO&lt;/code>操作或&lt;code>Blocking&lt;/code>操作时，会自动切换到其他虚拟线程执行，从而避免当前线程等待，可以高效通过少数线程去调度大量虚拟线程，最大化提升线程的执行效率。&lt;/li>
+&lt;/ul>
+&lt;h3 id="如何创建虚拟线程">如何创建虚拟线程&lt;/h3>
+&lt;ul>
+&lt;li>通过&lt;code>Thread.startVirtualThread()&lt;/code>创建&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-java" data-lang="java">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">//创建一个新的并且已启动的虚拟线程&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="n">Thread&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">thread&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Thread&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">startVirtualThread&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">runnable&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ul>
+&lt;li>通过&lt;code>Thread.ofVirtual()&lt;/code>创建&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-java" data-lang="java">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// 创建一个新的并且已启动的虚拟线程&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="n">Thread&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">thread&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Thread&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">ofVirtual&lt;/span>&lt;span class="p">().&lt;/span>&lt;span class="na">start&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">runnable&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ul>
+&lt;li>通过&lt;code>ThreadFactory&lt;/code>创建&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-java" data-lang="java">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// 获取线程工厂类&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="n">ThreadFactory&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">factory&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Thread&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">ofVirtual&lt;/span>&lt;span class="p">().&lt;/span>&lt;span class="na">factory&lt;/span>&lt;span class="p">();&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="c1">// 创建虚拟线程&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="n">Thread&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">thread&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">factory&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">newThread&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">runnable&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="c1">// 启动线程&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="n">thread&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">start&lt;/span>&lt;span class="p">();&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ul>
+&lt;li>通过&lt;code>Executors.newVirtualThreadPerTaskExecutor()&lt;/code>创建&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-java" data-lang="java">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">//创建executor&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="n">ExecutorService&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">executor&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Executors&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">newVirtualThreadPerTaskExecutor&lt;/span>&lt;span class="p">();&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="c1">//通过executor提交任务，采用虚拟线程执行&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="n">executor&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">submit&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">runnable&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="虚拟线程的状态和转换">虚拟线程的状态和转换&lt;/h3>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>状态&lt;/th>
+&lt;th>转换说明&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>NEW -&amp;gt; STARTED&lt;/td>
+&lt;td>Thread.start&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>STARTED -&amp;gt; TERMINATED&lt;/td>
+&lt;td>failed to start&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>STARTED -&amp;gt; RUNNING&lt;/td>
+&lt;td>first run&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>RUNNING -&amp;gt; PARKING&lt;/td>
+&lt;td>Thread attempts to park&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>PARKING -&amp;gt; PARKED&lt;/td>
+&lt;td>cont.yield successful, thread is parked&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>PARKING -&amp;gt; PINNED&lt;/td>
+&lt;td>cont.yield failed, thread is pinned&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>PARKED -&amp;gt; RUNNABLE&lt;/td>
+&lt;td>unpark or interrupted&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>PINNED -&amp;gt; RUNNABLE&lt;/td>
+&lt;td>unpark or interrupted&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>RUNNABLE -&amp;gt; RUNNING&lt;/td>
+&lt;td>continue execution&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>RUNNING -&amp;gt; YIELDING&lt;/td>
+&lt;td>Thread.yield&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>YIELDING -&amp;gt; RUNNABLE&lt;/td>
+&lt;td>yield successful&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>YIELDING -&amp;gt; RUNNING&lt;/td>
+&lt;td>yield failed&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>RUNNING -&amp;gt; TERMINATED&lt;/td>
+&lt;td>done&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h3 id="虚拟线程最佳实践">虚拟线程最佳实践&lt;/h3>
+&lt;blockquote>
+&lt;p>以下说明都是基于JDK21环境示例，如果是JDK19，则需要开启预览配置&lt;code>--enable-preview&lt;/code>&lt;/p>
+&lt;/blockquote>
+&lt;ul>
+&lt;li>示例源码参考：&lt;a class="link" href="https://github.com/guanyang/spring-project-samples/tree/main/virtualthread-sample" target="_blank" rel="noopener"
+>virtualthread-sample&lt;/a>&lt;/li>
+&lt;li>在&lt;code>SpringBoot&lt;/code>中使用虚拟线程处理请求&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-java" data-lang="java">&lt;span class="line">&lt;span class="cl">&lt;span class="nd">@EnableAsync&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="nd">@Configuration&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="nd">@ConditionalOnProperty&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">value&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="s">&amp;#34;spring.executor&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">havingValue&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="s">&amp;#34;virtual&amp;#34;&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kd">class&lt;/span> &lt;span class="nc">ThreadConfig&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="c1">//为每个异步任务提供虚拟线程执行Executor&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nd">@Bean&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">AsyncTaskExecutor&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nf">applicationTaskExecutor&lt;/span>&lt;span class="p">()&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="k">return&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">new&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">TaskExecutorAdapter&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">Executors&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">newVirtualThreadPerTaskExecutor&lt;/span>&lt;span class="p">());&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="c1">//为tomcat提供虚拟线程执行Executor&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nd">@Bean&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">TomcatProtocolHandlerCustomizer&lt;/span>&lt;span class="o">&amp;lt;?&amp;gt;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">protocolHandlerVirtualThreadExecutorCustomizer&lt;/span>&lt;span class="p">()&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="k">return&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">protocolHandler&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">-&amp;gt;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">protocolHandler&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">setExecutor&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">Executors&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">newVirtualThreadPerTaskExecutor&lt;/span>&lt;span class="p">());&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">};&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ul>
+&lt;li>在&lt;code>application.yml&lt;/code>中添加配置来启用虚拟线程&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-yml" data-lang="yml">&lt;span class="line">&lt;span class="cl">&lt;span class="nt">spring&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="c">#配置virtual表示启用虚拟线程，非virtual表示不启用，可以通过环境变量SPRING_EXECUTOR指定&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">executor&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">${SPRING_EXECUTOR:virtual}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ul>
+&lt;li>添加测试入口进行虚拟线程测试&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-java" data-lang="java">&lt;span class="line">&lt;span class="cl">&lt;span class="nd">@RestController&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="nd">@SpringBootApplication&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kd">class&lt;/span> &lt;span class="nc">VirtualthreadSampleApplication&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kd">static&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kt">void&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nf">main&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">String&lt;/span>&lt;span class="o">[]&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">args&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">SpringApplication&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">run&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">VirtualthreadSampleApplication&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">class&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">args&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nd">@GetMapping&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;/hello/{timeMillis}&amp;#34;&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Object&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nf">hello2&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nd">@PathVariable&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kt">long&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">timeMillis&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kd">throws&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">InterruptedException&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">Map&lt;/span>&lt;span class="o">&amp;lt;&lt;/span>&lt;span class="n">String&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Object&lt;/span>&lt;span class="o">&amp;gt;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">map&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">new&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">HashMap&lt;/span>&lt;span class="o">&amp;lt;&amp;gt;&lt;/span>&lt;span class="p">();&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">map&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">put&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;time&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">System&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">currentTimeMillis&lt;/span>&lt;span class="p">());&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">map&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">put&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;msg&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="s">&amp;#34;Hello World!&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="c1">//查看当时线程信息，识别是否是虚拟线程&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">map&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">put&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;thread&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Thread&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">currentThread&lt;/span>&lt;span class="p">().&lt;/span>&lt;span class="na">toString&lt;/span>&lt;span class="p">());&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="c1">//模拟耗时IO操作&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">Thread&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">sleep&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">timeMillis&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="k">return&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">map&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="性能测试">性能测试&lt;/h3>
+&lt;h4 id="资源版本">资源版本&lt;/h4>
+&lt;ul>
+&lt;li>Spring Boot: 3.1.4&lt;/li>
+&lt;li>JDK: graalvm-jdk-21&lt;/li>
+&lt;li>Docker Engine: 24.0.5&lt;/li>
+&lt;li>Docker Resource: 4C/8G&lt;/li>
+&lt;/ul>
+&lt;h4 id="压测源码镜像">压测源码&amp;amp;镜像&lt;/h4>
+&lt;ul>
+&lt;li>压测源码：https://github.com/guanyang/spring-project-samples/tree/main/virtualthread-sample&lt;/li>
+&lt;li>镜像资源
+&lt;ul>
+&lt;li>Dockerfile: virtualthread-sample/src/main/docker/Dockerfile&lt;/li>
+&lt;li>已构建示例镜像: guanyangsunlight/spring-project-samples:virtualthread-sample-0.0.1-SNAPSHOT&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>JMH测试代码: virtualthread-sample/src/test/java/org/gy/demo/virtualthread/ThreadTest.java&lt;/li>
+&lt;li>http测试接口：${host}/hello/{timeMillis}, host为服务地址，timeMillis为模拟IO操作的时间，单位毫秒，响应示例如下：&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-json" data-lang="json">&lt;span class="line">&lt;span class="cl">&lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="err">msg:&lt;/span> &lt;span class="nt">&amp;#34;Hello World!&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="err">time:&lt;/span> &lt;span class="err">1695871679753,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="err">thread:&lt;/span> &lt;span class="nt">&amp;#34;VirtualThread[#59]/runnable@ForkJoinPool-1-worker-1&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h4 id="压测工具">压测工具&lt;/h4>
+&lt;ul>
+&lt;li>K6: 压测http请求，参考链接：&lt;a class="link" href="https://k6.io/docs/" target="_blank" rel="noopener"
+>https://k6.io/docs/&lt;/a>&lt;/li>
+&lt;li>JMH: 由&lt;code>OpenJDK&lt;/code>团队开发的一款基准测试工具，参考链接：&lt;a class="link" href="https://github.com/openjdk/jmh" target="_blank" rel="noopener"
+>https://github.com/openjdk/jmh&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;h4 id="压测场景case">压测场景case&lt;/h4>
+&lt;ul>
+&lt;li>【基于K6】Spring Boot虚拟线程: 性能指标（QPS、Avg Latency、P95）&lt;/li>
+&lt;li>【基于K6】Spring Boot普通线程: 性能指标（QPS、Avg Latency、P95）&lt;/li>
+&lt;li>【基于JMH】普通线程任务调度执行: 平均响应时间（AverageTime）&lt;/li>
+&lt;li>【基于JMH】虚拟线程任务调度执行: 平均响应时间（AverageTime）&lt;/li>
+&lt;/ul>
+&lt;h4 id="k6压测">K6压测&lt;/h4>
+&lt;h5 id="压测脚本">压测脚本&lt;/h5>
+&lt;ul>
+&lt;li>总请求时长60s，并发从200开始，并按照200步长增长，命令如下：&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">k6 run -u 200 --duration 60s -e url=http://127.0.0.1:8081/hello/100 simple-test.js
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">-i：指定请求数量
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">-u：模拟并发数量
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">--duration：请求时长定义，例如：60s，1m
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">-e url：指定环境变量url，用于实际场景替换
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h5 id="simple-testjs脚本说明">&lt;code>simple-test.js&lt;/code>脚本说明&lt;/h5>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;span class="lnt">8
+&lt;/span>&lt;span class="lnt">9
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-gdscript3" data-lang="gdscript3">&lt;span class="line">&lt;span class="cl">&lt;span class="n">import&lt;/span> &lt;span class="n">http&lt;/span> &lt;span class="n">from&lt;/span> &lt;span class="s1">&amp;#39;k6/http&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">import&lt;/span> &lt;span class="p">{&lt;/span> &lt;span class="n">check&lt;/span> &lt;span class="p">}&lt;/span> &lt;span class="n">from&lt;/span> &lt;span class="s1">&amp;#39;k6&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">export&lt;/span> &lt;span class="n">default&lt;/span> &lt;span class="n">function&lt;/span> &lt;span class="p">()&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">const&lt;/span> &lt;span class="n">res&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">http&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">get&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="err">`&lt;/span>&lt;span class="o">$&lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="n">__ENV&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">url&lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="err">`&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">check&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">res&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s1">&amp;#39;is status 200&amp;#39;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="n">r&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">=&amp;gt;&lt;/span> &lt;span class="n">r&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">status&lt;/span> &lt;span class="o">===&lt;/span> &lt;span class="mi">200&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">});&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h5 id="压测docker实例">压测docker实例&lt;/h5>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">## 启用虚拟线程实例&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">docker run --name virtualthread-sample-vt -p 8081:8080 -e &lt;span class="nv">SPRING_EXECUTOR&lt;/span>&lt;span class="o">=&lt;/span>virtual -d guanyangsunlight/spring-project-samples:virtualthread-sample-0.0.1-SNAPSHOT
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">## 启用普通线程实例&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">docker run --name virtualthread-sample -p 8082:8080 -e &lt;span class="nv">SPRING_EXECUTOR&lt;/span>&lt;span class="o">=&lt;/span>none -d guanyangsunlight/spring-project-samples:virtualthread-sample-0.0.1-SNAPSHOT
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h5 id="k6压测结果">K6压测结果&lt;/h5>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>Case&lt;/th>
+&lt;th>QPS&lt;/th>
+&lt;th>Avg Latency&lt;/th>
+&lt;th>P95&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>Spring Boot虚拟线程,-u 200&lt;/td>
+&lt;td>1620.869685/s&lt;/td>
+&lt;td>123.09ms&lt;/td>
+&lt;td>149.42ms&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Spring Boot虚拟线程,-u 400&lt;/td>
+&lt;td>2202.121674/s&lt;/td>
+&lt;td>180.84ms&lt;/td>
+&lt;td>277.14ms&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Spring Boot虚拟线程,-u 600&lt;/td>
+&lt;td>3195.845398/s&lt;/td>
+&lt;td>186.44ms&lt;/td>
+&lt;td>256.03ms&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Spring Boot虚拟线程,-u 800&lt;/td>
+&lt;td>3780.654388/s&lt;/td>
+&lt;td>210.28ms&lt;/td>
+&lt;td>294.79ms&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Spring Boot虚拟线程,-u 1000&lt;/td>
+&lt;td>4250.384928/s&lt;/td>
+&lt;td>234.17ms&lt;/td>
+&lt;td>319.92ms&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Spring Boot虚拟线程,-u 1200&lt;/td>
+&lt;td>4479.450088/s&lt;/td>
+&lt;td>266.15ms&lt;/td>
+&lt;td>370.17ms&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Spring Boot普通线程,-u 200&lt;/td>
+&lt;td>1418.709029/s&lt;/td>
+&lt;td>140.69ms&lt;/td>
+&lt;td>218.24ms&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Spring Boot普通线程,-u 400&lt;/td>
+&lt;td>1888.860872/s&lt;/td>
+&lt;td>210.91ms&lt;/td>
+&lt;td>247.39ms&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Spring Boot普通线程,-u 600&lt;/td>
+&lt;td>1889.607486/s&lt;/td>
+&lt;td>315.49ms&lt;/td>
+&lt;td>373.9ms&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Spring Boot普通线程,-u 800&lt;/td>
+&lt;td>1954.985051/s&lt;/td>
+&lt;td>405.99ms&lt;/td>
+&lt;td>428.44ms&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Spring Boot普通线程,-u 1000&lt;/td>
+&lt;td>1917.568269/s&lt;/td>
+&lt;td>516.33ms&lt;/td>
+&lt;td>585.76ms&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h5 id="k6压测总结">K6压测总结&lt;/h5>
+&lt;blockquote>
+&lt;p>以上实例都是在jvm默认参数及tomcat线程池默认200大小场景下进行，没有进行任何调优配置&lt;/p>
+&lt;/blockquote>
+&lt;ul>
+&lt;li>采用虚拟线程模式，随着并发数的提高，性能提升比较明显，整体性能明显优于普通线程模式。&lt;/li>
+&lt;li>采用普通线程模式，由于tomcat默认线程池配置，增加并发数并不能明显提升QPS，由于阻塞等待导致耗时边长。&lt;/li>
+&lt;li>虚拟线程在执行到&lt;code>IO&lt;/code>操作或&lt;code>Blocking&lt;/code>操作时，会自动切换到其他虚拟线程执行，从而避免当前线程等待，可以高效通过少数线程去调度大量虚拟线程，最大化提升线程的执行效率。&lt;/li>
+&lt;/ul>
+&lt;h4 id="基于jmh任务调度测试">基于JMH任务调度测试&lt;/h4>
+&lt;h5 id="基础配置说明">基础配置说明&lt;/h5>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;span class="lnt">25
+&lt;/span>&lt;span class="lnt">26
+&lt;/span>&lt;span class="lnt">27
+&lt;/span>&lt;span class="lnt">28
+&lt;/span>&lt;span class="lnt">29
+&lt;/span>&lt;span class="lnt">30
+&lt;/span>&lt;span class="lnt">31
+&lt;/span>&lt;span class="lnt">32
+&lt;/span>&lt;span class="lnt">33
+&lt;/span>&lt;span class="lnt">34
+&lt;/span>&lt;span class="lnt">35
+&lt;/span>&lt;span class="lnt">36
+&lt;/span>&lt;span class="lnt">37
+&lt;/span>&lt;span class="lnt">38
+&lt;/span>&lt;span class="lnt">39
+&lt;/span>&lt;span class="lnt">40
+&lt;/span>&lt;span class="lnt">41
+&lt;/span>&lt;span class="lnt">42
+&lt;/span>&lt;span class="lnt">43
+&lt;/span>&lt;span class="lnt">44
+&lt;/span>&lt;span class="lnt">45
+&lt;/span>&lt;span class="lnt">46
+&lt;/span>&lt;span class="lnt">47
+&lt;/span>&lt;span class="lnt">48
+&lt;/span>&lt;span class="lnt">49
+&lt;/span>&lt;span class="lnt">50
+&lt;/span>&lt;span class="lnt">51
+&lt;/span>&lt;span class="lnt">52
+&lt;/span>&lt;span class="lnt">53
+&lt;/span>&lt;span class="lnt">54
+&lt;/span>&lt;span class="lnt">55
+&lt;/span>&lt;span class="lnt">56
+&lt;/span>&lt;span class="lnt">57
+&lt;/span>&lt;span class="lnt">58
+&lt;/span>&lt;span class="lnt">59
+&lt;/span>&lt;span class="lnt">60
+&lt;/span>&lt;span class="lnt">61
+&lt;/span>&lt;span class="lnt">62
+&lt;/span>&lt;span class="lnt">63
+&lt;/span>&lt;span class="lnt">64
+&lt;/span>&lt;span class="lnt">65
+&lt;/span>&lt;span class="lnt">66
+&lt;/span>&lt;span class="lnt">67
+&lt;/span>&lt;span class="lnt">68
+&lt;/span>&lt;span class="lnt">69
+&lt;/span>&lt;span class="lnt">70
+&lt;/span>&lt;span class="lnt">71
+&lt;/span>&lt;span class="lnt">72
+&lt;/span>&lt;span class="lnt">73
+&lt;/span>&lt;span class="lnt">74
+&lt;/span>&lt;span class="lnt">75
+&lt;/span>&lt;span class="lnt">76
+&lt;/span>&lt;span class="lnt">77
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-java" data-lang="java">&lt;span class="line">&lt;span class="cl">&lt;span class="nd">@BenchmarkMode&lt;/span>&lt;span class="p">({&lt;/span>&lt;span class="n">Mode&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">AverageTime&lt;/span>&lt;span class="p">})&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="c1">//平均响应时间模式&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="nd">@OutputTimeUnit&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">TimeUnit&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">MILLISECONDS&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="c1">//输出单位：毫秒模式&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="nd">@State&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">Scope&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">Benchmark&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="c1">//作用域为本次JMH测试，线程共享&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="nd">@Fork&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">value&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">1&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="c1">//fork出一个JVM进程&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="nd">@Threads&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">4&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="c1">//使用4个线程去执行测试方法&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="nd">@Warmup&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">iterations&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">5&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">time&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">1&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">timeUnit&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">TimeUnit&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">SECONDS&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="c1">//预热迭代5次，每次一秒&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="nd">@Measurement&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">iterations&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">5&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">time&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">1&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">timeUnit&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">TimeUnit&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">SECONDS&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="c1">//测试迭代5次，每次一秒&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kd">class&lt;/span> &lt;span class="nc">ThreadTest&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nd">@Param&lt;/span>&lt;span class="p">({&lt;/span>&lt;span class="s">&amp;#34;500&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="s">&amp;#34;1000&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="s">&amp;#34;2000&amp;#34;&lt;/span>&lt;span class="p">})&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="c1">//模拟任务调度次数，分别500次，1000次，2000次&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">private&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kt">int&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">loop&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nd">@Param&lt;/span>&lt;span class="p">({&lt;/span>&lt;span class="s">&amp;#34;50&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="s">&amp;#34;100&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="s">&amp;#34;200&amp;#34;&lt;/span>&lt;span class="p">})&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="c1">//模拟线程池大小，也是虚拟线程调度器大小&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">private&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kt">int&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">nThreads&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">private&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">ExecutorService&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">executor&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">private&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">ExecutorService&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">virtualExecutor&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nd">@Setup&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="c1">//每个测试方法前初始化&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kt">void&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nf">setup&lt;/span>&lt;span class="p">()&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="c1">//普通线程方式&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">executor&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Executors&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">newFixedThreadPool&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">nThreads&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="c1">//定义虚拟线程调度器大小，保持跟平台线程池大小一样&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">System&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">setProperty&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;jdk.virtualThreadScheduler.maxPoolSize&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">String&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">valueOf&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">nThreads&lt;/span>&lt;span class="p">));&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">virtualExecutor&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Executors&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">newVirtualThreadPerTaskExecutor&lt;/span>&lt;span class="p">();&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nd">@TearDown&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="c1">//每个测试方法执行后销毁&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kt">void&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nf">tearDown&lt;/span>&lt;span class="p">()&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">executor&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">close&lt;/span>&lt;span class="p">();&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">virtualExecutor&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">close&lt;/span>&lt;span class="p">();&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="c1">//主函数启动测试&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kd">static&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kt">void&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nf">main&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">String&lt;/span>&lt;span class="o">[]&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">args&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kd">throws&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">RunnerException&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">Options&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">opt&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">new&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">OptionsBuilder&lt;/span>&lt;span class="p">().&lt;/span>&lt;span class="na">include&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">ThreadTest&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">class&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">getSimpleName&lt;/span>&lt;span class="p">()).&lt;/span>&lt;span class="na">build&lt;/span>&lt;span class="p">();&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="k">new&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Runner&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">opt&lt;/span>&lt;span class="p">).&lt;/span>&lt;span class="na">run&lt;/span>&lt;span class="p">();&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="c1">//普通线程测试用例&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nd">@Benchmark&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kt">void&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nf">platformThreadTest&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">Blackhole&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">bh&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="c1">//模拟多个任务调度测试，返回最终结果&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">List&lt;/span>&lt;span class="o">&amp;lt;&lt;/span>&lt;span class="n">Integer&lt;/span>&lt;span class="o">&amp;gt;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">result&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">execute&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">loop&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">executor&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">ThreadTest&lt;/span>&lt;span class="p">::&lt;/span>&lt;span class="n">sleepTime&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">bh&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">consume&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">result&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="c1">//虚拟线程测试用例&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nd">@Benchmark&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kt">void&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nf">virtualThreadTest&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">Blackhole&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">bh&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="c1">//模拟多个任务调度测试，返回最终结果&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">List&lt;/span>&lt;span class="o">&amp;lt;&lt;/span>&lt;span class="n">Integer&lt;/span>&lt;span class="o">&amp;gt;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">result&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">execute&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">loop&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">virtualExecutor&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">ThreadTest&lt;/span>&lt;span class="p">::&lt;/span>&lt;span class="n">sleepTime&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">bh&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">consume&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">result&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="c1">//模拟多个任务调度测试，返回最终结果&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">private&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kd">static&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">&amp;lt;&lt;/span>&lt;span class="n">T&lt;/span>&lt;span class="o">&amp;gt;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">List&lt;/span>&lt;span class="o">&amp;lt;&lt;/span>&lt;span class="n">T&lt;/span>&lt;span class="o">&amp;gt;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nf">execute&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="kt">int&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">loop&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">ExecutorService&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">executor&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Supplier&lt;/span>&lt;span class="o">&amp;lt;&lt;/span>&lt;span class="n">T&lt;/span>&lt;span class="o">&amp;gt;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">supplier&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">CompletableFuture&lt;/span>&lt;span class="o">&amp;lt;&lt;/span>&lt;span class="n">T&lt;/span>&lt;span class="o">&amp;gt;[]&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">futures&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">new&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">CompletableFuture&lt;/span>&lt;span class="o">[&lt;/span>&lt;span class="n">loop&lt;/span>&lt;span class="o">]&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="k">for&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="kt">int&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">i&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">0&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">i&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">&amp;lt;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">loop&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">i&lt;/span>&lt;span class="o">++&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="c1">//模拟执行耗时任务&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">futures&lt;/span>&lt;span class="o">[&lt;/span>&lt;span class="n">i&lt;/span>&lt;span class="o">]&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">CompletableFuture&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">supplyAsync&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">supplier&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">executor&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">CompletableFuture&lt;/span>&lt;span class="o">&amp;lt;&lt;/span>&lt;span class="n">Void&lt;/span>&lt;span class="o">&amp;gt;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">result&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">CompletableFuture&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">allOf&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">futures&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">result&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">join&lt;/span>&lt;span class="p">();&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="k">return&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Stream&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">of&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">futures&lt;/span>&lt;span class="p">).&lt;/span>&lt;span class="na">map&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">f&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">-&amp;gt;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">f&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">getNow&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="kc">null&lt;/span>&lt;span class="p">)).&lt;/span>&lt;span class="na">filter&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">Objects&lt;/span>&lt;span class="p">::&lt;/span>&lt;span class="n">nonNull&lt;/span>&lt;span class="p">).&lt;/span>&lt;span class="na">collect&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">Collectors&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">toList&lt;/span>&lt;span class="p">());&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="c1">//sleep方法，模拟耗时IO操作，目前暂定30ms&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nd">@SneakyThrows&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">private&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kd">static&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kt">int&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nf">sleepTime&lt;/span>&lt;span class="p">()&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">Thread&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">sleep&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">Duration&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">ofMillis&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">sleepTimeMillis&lt;/span>&lt;span class="p">));&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="k">return&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">sleepTimeMillis&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">...&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h5 id="jmh测试结果">JMH测试结果&lt;/h5>
+&lt;blockquote>
+&lt;p>Score表示平均响应时间(ms)，越小越好，loop表示任务次数，nThreads表示线程数，也是虚拟线程调度器大小&lt;/p>
+&lt;/blockquote>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">Benchmark (loop) (nThreads) Mode Cnt Score Error Units
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">ThreadTest.platformThreadTest 500 50 avgt 5 1090.077 ± 324.304 ms/op
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">ThreadTest.platformThreadTest 500 100 avgt 5 568.331 ± 106.303 ms/op
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">ThreadTest.platformThreadTest 500 200 avgt 5 294.539 ± 17.419 ms/op
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">ThreadTest.platformThreadTest 1000 50 avgt 5 2118.651 ± 426.003 ms/op
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">ThreadTest.platformThreadTest 1000 100 avgt 5 923.840 ± 226.815 ms/op
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">ThreadTest.platformThreadTest 1000 200 avgt 5 534.198 ± 115.960 ms/op
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">ThreadTest.platformThreadTest 2000 50 avgt 5 4013.412 ± 2046.025 ms/op
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">ThreadTest.platformThreadTest 2000 100 avgt 5 1828.609 ± 413.867 ms/op
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">ThreadTest.platformThreadTest 2000 200 avgt 5 938.532 ± 173.568 ms/op
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">ThreadTest.virtualThreadTest 500 50 avgt 5 31.733 ± 0.380 ms/op
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">ThreadTest.virtualThreadTest 500 100 avgt 5 31.747 ± 0.468 ms/op
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">ThreadTest.virtualThreadTest 500 200 avgt 5 31.771 ± 0.236 ms/op
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">ThreadTest.virtualThreadTest 1000 50 avgt 5 32.783 ± 1.654 ms/op
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">ThreadTest.virtualThreadTest 1000 100 avgt 5 32.827 ± 0.959 ms/op
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">ThreadTest.virtualThreadTest 1000 200 avgt 5 32.672 ± 0.894 ms/op
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">ThreadTest.virtualThreadTest 2000 50 avgt 5 34.578 ± 1.554 ms/op
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">ThreadTest.virtualThreadTest 2000 100 avgt 5 35.001 ± 1.889 ms/op
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">ThreadTest.virtualThreadTest 2000 200 avgt 5 35.236 ± 1.127 ms/op
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h5 id="jmh测试总结">JMH测试总结&lt;/h5>
+&lt;ul>
+&lt;li>虚拟线程在执行到&lt;code>IO&lt;/code>操作或&lt;code>Blocking&lt;/code>操作时性能提升十分明显，有数量级的提升，非常适合&lt;code>IO&lt;/code>密集型的场景。&lt;/li>
+&lt;/ul>
+&lt;h3 id="总结">总结&lt;/h3>
+&lt;p>虚拟线程是Java为了解决并发编程中的一些常见问题而引入的新特性，特别是在I/O操作方面。以下是虚拟线程优缺点及使用场景总结：&lt;/p>
+&lt;ul>
+&lt;li>优点：
+&lt;ul>
+&lt;li>&lt;strong>资源使用低&lt;/strong>：虚拟线程比传统线程消耗更少的资源。&lt;/li>
+&lt;li>&lt;strong>简化并发编程&lt;/strong>：虚拟线程允许直接为每一个任务创建一个线程，而不需要复杂的线程池或者任务调度策略。&lt;/li>
+&lt;li>&lt;strong>提高吞吐量和响应时间&lt;/strong>：由于虚拟线程可以快速切换，所以它们可以帮助减小延迟并提高系统的吞吐量。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>缺点：
+&lt;ul>
+&lt;li>&lt;strong>仍处于试水阶段&lt;/strong>：虚拟线程属于新特性，生产环境暂无应用验证，处于试水阶段。&lt;/li>
+&lt;li>&lt;strong>与现有代码的兼容性问题&lt;/strong>：一些依赖于线程本地存储（Thread Local Storage, TLS）或者同步原语的既有代码可能无法正确地在虚拟线程上运行。&lt;/li>
+&lt;li>&lt;strong>调试和监控工具支持&lt;/strong>：当前，许多Java的调试和监控工具还不完全支持虚拟线程。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>使用场景：
+&lt;ul>
+&lt;li>&lt;strong>高并发应用&lt;/strong>：例如Web服务器、消息队列等，可以为每个请求或任务启动一个单独的虚拟线程，以提高系统的吞吐量。&lt;/li>
+&lt;li>&lt;strong>异步编程&lt;/strong>：虚拟线程可以简化异步编程模型，使得你可以写出看起来像同步代码的异步代码。&lt;/li>
+&lt;li>&lt;strong>微服务架构&lt;/strong>：在微服务架构中，通常需要处理大量的网络请求，虚拟线程可以帮助提高系统的响应能力。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;blockquote>
+&lt;p>还需要注意的是，虽然虚拟线程对于某些场景非常有用，但并不是所有问题都适合使用虚拟线程来解决。你应该根据项目的具体需求和环境选择最合适的工具。&lt;/p>
+&lt;/blockquote></description></item><item><title>Spring Webflux使用subscribeOn和publishOn的最佳实践</title><link>https://blog.xcloudapi.com/p/spring-webflux%E4%BD%BF%E7%94%A8subscribeon%E5%92%8Cpublishon%E7%9A%84%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/</link><pubDate>Sun, 05 Nov 2023 16:38:08 +1100</pubDate><guid>https://blog.xcloudapi.com/p/spring-webflux%E4%BD%BF%E7%94%A8subscribeon%E5%92%8Cpublishon%E7%9A%84%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/</guid><description>&lt;img src="https://blog.xcloudapi.com/image/header/bg-3.jpg" alt="Featured image of post Spring Webflux使用subscribeOn和publishOn的最佳实践" />&lt;h3 id="概述">概述&lt;/h3>
+&lt;p>在Spring Webflux中，有两个关键的调度器操作符：&lt;code>publishOn&lt;/code>和&lt;code>subscribeOn&lt;/code>。理解它们的用途和差异是使用WebFlux进行反应式编程的重要部分。&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>subscribeOn&lt;/code>：这个操作符定义了产生数据的线程。无论在哪里放置subscribeOn，都只会影响源头的执行线程。如果在一个流的多个地方使用subscribeOn，只有第一个起作用。&lt;/li>
+&lt;li>&lt;code>publishOn&lt;/code>：这个操作符可以影响其后续操作运行的线程。如果在流中的多个地方使用publishOn，每个都会起作用，并且会改变其后续操作的执行线程。&lt;/li>
+&lt;/ul>
+&lt;h3 id="scheduler调度器">Scheduler调度器&lt;/h3>
+&lt;p>在&lt;code>Spring WebFlux&lt;/code>中，&lt;code>Scheduler&lt;/code>（调度器）是Project Reactor中的一个概念，它负责控制并发和线程切换。 主要有以下几种常见类型的Scheduler：&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>Schedulers.immediate()&lt;/code>：直接在当前线程执行任务，不进行线程切换。&lt;/li>
+&lt;li>&lt;code>Schedulers.single()&lt;/code>：创建一个只包含一个线程的调度器，所有任务都在这个单一线程上执行。如果这个线程出现故障，将创建一个新的线程替代它。&lt;/li>
+&lt;li>&lt;code>Schedulers.elastic()&lt;/code>：创建一个弹性的线程池，适用于IO阻塞操作比如数据库查询、文件读写等。该线程池会根据需要创建新的线程，如果线程闲置时间过长则会被销毁。弹性线程池可以无限大，所以要注意不要在大量计算密集型的任务中使用它，因为这可能导致创建大量线程，消耗过多系统资源。&lt;/li>
+&lt;li>&lt;code>Schedulers.parallel()&lt;/code>：创建一个固定大小的线程池，线程数量默认等于CPU核心数。适用于计算密集型任务，因为这类任务能够充分利用CPU资源。&lt;/li>
+&lt;li>&lt;code>Schedulers.boundedElastic()&lt;/code>：创建一个有界的弹性线程池，适合I/O任务。它与Schedulers.elastic()相似，但有最大线程数和队列大小的限制。&lt;/li>
+&lt;/ul>
+&lt;h3 id="publishon和subscribeon使用场景">&lt;code>publishOn&lt;/code>和&lt;code>subscribeOn&lt;/code>使用场景&lt;/h3>
+&lt;p>使用&lt;code>Scheduler&lt;/code>的方法主要是通过&lt;code>publishOn&lt;/code>和&lt;code>subscribeOn&lt;/code>两个操作符。&lt;/p>
+&lt;ul>
+&lt;li>使用&lt;code>publishOn&lt;/code>将数据流中后续的处理操作在parallel调度器对应的线程池中执行&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">flux.publishOn(Schedulers.parallel()).map(this::blockMethod)
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ul>
+&lt;li>使用&lt;code>subscribeOn&lt;/code>将源头的操作在boundedElastic调度器对应的线程池中执行&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">Mono.fromCallable(this::blockMethod).subscribeOn(Schedulers.boundedElastic())
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="两者的区别">两者的区别&lt;/h3>
+&lt;ul>
+&lt;li>&lt;code>publishOn&lt;/code>常用于切换执行下游操作符的线程，影响范围和它的位置有关。&lt;/li>
+&lt;li>&lt;code>subscribeOn&lt;/code>常用于切换源头数据生成的线程，影响范围则和位置无关。&lt;/li>
+&lt;/ul>
+&lt;h3 id="使用示例">使用示例&lt;/h3>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-java" data-lang="java">&lt;span class="line">&lt;span class="cl">&lt;span class="kn">import&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nn">org.junit.jupiter.api.Test&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="kn">import&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nn">reactor.core.publisher.Flux&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="kn">import&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nn">reactor.core.scheduler.Schedulers&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kd">class&lt;/span> &lt;span class="nc">PublishOnAndSubscribeOnTests&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nd">@Test&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kt">void&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nf">testPublishOnAndSubscribeOn&lt;/span>&lt;span class="p">()&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">Flux&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">just&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;Hello&amp;#34;&lt;/span>&lt;span class="p">).&lt;/span>&lt;span class="na">map&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">s&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">-&amp;gt;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">System&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">out&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">println&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;[1] Thread name: &amp;#34;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Thread&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">currentThread&lt;/span>&lt;span class="p">().&lt;/span>&lt;span class="na">getName&lt;/span>&lt;span class="p">());&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="k">return&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">s&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">concat&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34; World&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}).&lt;/span>&lt;span class="na">publishOn&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">Schedulers&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">newParallel&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;thread-publishOn&amp;#34;&lt;/span>&lt;span class="p">)).&lt;/span>&lt;span class="na">map&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">s&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">-&amp;gt;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">System&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">out&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">println&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;[2] Thread name: &amp;#34;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Thread&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">currentThread&lt;/span>&lt;span class="p">().&lt;/span>&lt;span class="na">getName&lt;/span>&lt;span class="p">());&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="k">return&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">s&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}).&lt;/span>&lt;span class="na">subscribeOn&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">Schedulers&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">newSingle&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;thread-subscribeOn&amp;#34;&lt;/span>&lt;span class="p">)).&lt;/span>&lt;span class="na">subscribe&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">s&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">-&amp;gt;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">System&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">out&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">println&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;[3] Thread name: &amp;#34;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Thread&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">currentThread&lt;/span>&lt;span class="p">().&lt;/span>&lt;span class="na">getName&lt;/span>&lt;span class="p">());&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">System&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">out&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">println&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">s&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">});&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ul>
+&lt;li>输入结果如下：&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">[1] Thread name: thread-subscribeOn-1
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">[2] Thread name: thread-publishOn-1
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">[3] Thread name: thread-publishOn-1
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Hello World
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ul>
+&lt;li>从上面的例子可以看出，&lt;code>subscribeOn&lt;/code>定义在&lt;code>publishOn&lt;/code>之后，但是却从源头开始生效。&lt;/li>
+&lt;li>而在&lt;code>publishOn&lt;/code>执行之后，线程池变更为&lt;code>publishOn&lt;/code>所定义的。&lt;/li>
+&lt;/ul>
+&lt;h3 id="总结">总结&lt;/h3>
+&lt;ul>
+&lt;li>在实际使用中，我们可以根据需要选择使用&lt;code>publishOn&lt;/code>或&lt;code>subscribeOn&lt;/code>，它们可以帮助我们更好地控制程序的并发行为和系统资源的利用。&lt;/li>
+&lt;li>然而，&lt;code>publishOn&lt;/code>与&lt;code>subscribeOn&lt;/code>也有一些局限性：&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">1.无法解决所有并发问题：虽然它们可以将任务移至其他线程执行，但如果你的程序设计本身就没有考虑到并发安全，那么使用这两者仍可能出现问题。
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">2.线程切换开销：每次通过publishOn或subscribeOn进行线程切换时，都会产生一定的系统开销。如果大量无谓的线程切换，可能会对性能产生负面影响。
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div></description></item><item><title>JDK21虚拟线程和webflux性能对决</title><link>https://blog.xcloudapi.com/p/jdk21%E8%99%9A%E6%8B%9F%E7%BA%BF%E7%A8%8B%E5%92%8Cwebflux%E6%80%A7%E8%83%BD%E5%AF%B9%E5%86%B3/</link><pubDate>Sun, 05 Nov 2023 16:25:08 +1800</pubDate><guid>https://blog.xcloudapi.com/p/jdk21%E8%99%9A%E6%8B%9F%E7%BA%BF%E7%A8%8B%E5%92%8Cwebflux%E6%80%A7%E8%83%BD%E5%AF%B9%E5%86%B3/</guid><description>&lt;img src="https://blog.xcloudapi.com/image/header/bg-2.jpg" alt="Featured image of post JDK21虚拟线程和webflux性能对决" />&lt;h3 id="概述">概述&lt;/h3>
+&lt;ul>
+&lt;li>虚拟线程是JDK 21中引入的一项重要特性，它是一种轻量级的线程实现，旨在提高Java应用程序的并发性能。&lt;/li>
+&lt;li>虚拟线程（Virtual Threads）也被称为纤程（Fibers），其基本的工作原理是将线程的调度从操作系统级别转移到用户级别，即由JVM控制。&lt;/li>
+&lt;li>Spring WebFlux是Spring Framework的一个模块，它提供了一种基于响应式编程模型的Web开发框架。&lt;/li>
+&lt;li>Spring WebFlux支持两种编程模型，分别是注解驱动和函数式编程。在注解驱动模型中，可以使用类似于Spring MVC的注解来定义请求处理方法，并利用Reactor提供的操作符和流式处理方式来处理请求和响应。在函数式编程模型中，可以使用一组函数式接口来定义路由和处理函数，以及利用Flux和Mono来处理异步数据流。&lt;/li>
+&lt;/ul>
+&lt;h3 id="虚拟线程和webflux的性能对决">虚拟线程和webflux的性能对决&lt;/h3>
+&lt;h4 id="环境及配置">环境及配置&lt;/h4>
+&lt;ul>
+&lt;li>Spring Boot: 3.1.4&lt;/li>
+&lt;li>JDK: graalvm-jdk-21&lt;/li>
+&lt;li>Docker Engine: 24.0.5&lt;/li>
+&lt;li>Docker Resource: 4C/8G&lt;/li>
+&lt;/ul>
+&lt;h4 id="压测源码镜像">压测源码&amp;amp;镜像&lt;/h4>
+&lt;ul>
+&lt;li>源码仓库：https://github.com/guanyang/spring-project-samples&lt;/li>
+&lt;li>虚拟线程源码示例：virtualthread-sample&lt;/li>
+&lt;li>webflux源码示例：webflux-sample&lt;/li>
+&lt;li>已构建示例镜像如下：&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">1.虚拟线程镜像: guanyangsunlight/spring-project-samples:virtualthread-sample-0.0.1-SNAPSHOT
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">2.webflux镜像：guanyangsunlight/spring-project-samples:webflux-sample-0.0.1-SNAPSHOT
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ul>
+&lt;li>http测试接口：${host}/hello/{timeMillis}, host为服务地址，timeMillis为模拟IO操作的时间，单位毫秒，响应示例如下：&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-json" data-lang="json">&lt;span class="line">&lt;span class="cl">&lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="err">msg:&lt;/span> &lt;span class="nt">&amp;#34;Hello World!&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="err">time:&lt;/span> &lt;span class="err">1695871679753,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="err">thread:&lt;/span> &lt;span class="nt">&amp;#34;VirtualThread[#59]/runnable@ForkJoinPool-1-worker-1&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h4 id="压测工具">压测工具&lt;/h4>
+&lt;ul>
+&lt;li>K6: 压测http请求，参考链接：&lt;a class="link" href="https://k6.io/docs/" target="_blank" rel="noopener"
+>https://k6.io/docs/&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;h4 id="压测场景case">压测场景case&lt;/h4>
+&lt;ul>
+&lt;li>Spring Boot虚拟线程: 性能指标（QPS、Avg Latency、P95）&lt;/li>
+&lt;li>Spring webflux响应式: 性能指标（QPS、Avg Latency、P95）&lt;/li>
+&lt;/ul>
+&lt;h4 id="k6压测">K6压测&lt;/h4>
+&lt;h5 id="压测脚本">压测脚本&lt;/h5>
+&lt;ul>
+&lt;li>总请求时长60s，并发从200开始，并按照200步长增长，命令如下：&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">k6 run -u 200 --duration 60s -e url=http://127.0.0.1:8081/hello/100 simple-test.js
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">-i：指定请求数量
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">-u：模拟并发数量
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">--duration：请求时长定义，例如：60s，1m
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">-e url：指定环境变量url，用于实际场景替换
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h5 id="simple-testjs脚本说明">&lt;code>simple-test.js&lt;/code>脚本说明&lt;/h5>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;span class="lnt">8
+&lt;/span>&lt;span class="lnt">9
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-gdscript3" data-lang="gdscript3">&lt;span class="line">&lt;span class="cl">&lt;span class="n">import&lt;/span> &lt;span class="n">http&lt;/span> &lt;span class="n">from&lt;/span> &lt;span class="s1">&amp;#39;k6/http&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">import&lt;/span> &lt;span class="p">{&lt;/span> &lt;span class="n">check&lt;/span> &lt;span class="p">}&lt;/span> &lt;span class="n">from&lt;/span> &lt;span class="s1">&amp;#39;k6&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">export&lt;/span> &lt;span class="n">default&lt;/span> &lt;span class="n">function&lt;/span> &lt;span class="p">()&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">const&lt;/span> &lt;span class="n">res&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">http&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">get&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="err">`&lt;/span>&lt;span class="o">$&lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="n">__ENV&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">url&lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="err">`&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">check&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">res&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s1">&amp;#39;is status 200&amp;#39;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="n">r&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">=&amp;gt;&lt;/span> &lt;span class="n">r&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">status&lt;/span> &lt;span class="o">===&lt;/span> &lt;span class="mi">200&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">});&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h5 id="压测docker实例">压测docker实例&lt;/h5>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">## 启用虚拟线程实例&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">docker run --name virtualthread-sample-vt -p 8081:8080 -e &lt;span class="nv">SPRING_EXECUTOR&lt;/span>&lt;span class="o">=&lt;/span>virtual -d guanyangsunlight/spring-project-samples:virtualthread-sample-0.0.1-SNAPSHOT
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">## 启用webflux实例&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">docker run --name webflux-sample -p 8083:8080 -d guanyangsunlight/spring-project-samples:webflux-sample-0.0.1-SNAPSHOT
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h5 id="k6压测结果">K6压测结果&lt;/h5>
+&lt;ul>
+&lt;li>QPS对比&lt;/li>
+&lt;/ul>
+&lt;p>&lt;img src="https://blog.xcloudapi.com/image/blog/QPS.png"
+loading="lazy"
+alt="QPS对比"
+>&lt;/p>
+&lt;ul>
+&lt;li>Avg Latency对比&lt;/li>
+&lt;/ul>
+&lt;p>&lt;img src="https://blog.xcloudapi.com/image/blog/Avg-Latency.png"
+loading="lazy"
+alt="Avg Latency对比"
+>&lt;/p>
+&lt;ul>
+&lt;li>详细数据&lt;/li>
+&lt;/ul>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>Case&lt;/th>
+&lt;th>QPS&lt;/th>
+&lt;th>Avg Latency&lt;/th>
+&lt;th>P95&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>Spring Boot虚拟线程,-u 200&lt;/td>
+&lt;td>1620.869685/s&lt;/td>
+&lt;td>123.09ms&lt;/td>
+&lt;td>149.42ms&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Spring Boot虚拟线程,-u 400&lt;/td>
+&lt;td>2634.599143/s&lt;/td>
+&lt;td>151.55ms&lt;/td>
+&lt;td>198.37ms&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Spring Boot虚拟线程,-u 600&lt;/td>
+&lt;td>3136.075961/s&lt;/td>
+&lt;td>186.44ms&lt;/td>
+&lt;td>256.03ms&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Spring Boot虚拟线程,-u 800&lt;/td>
+&lt;td>3780.654388/s&lt;/td>
+&lt;td>210.28ms&lt;/td>
+&lt;td>294.79ms&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Spring Boot虚拟线程,-u 1000&lt;/td>
+&lt;td>4250.384928/s&lt;/td>
+&lt;td>234.17ms&lt;/td>
+&lt;td>319.92ms&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Spring Boot虚拟线程,-u 1200&lt;/td>
+&lt;td>4479.450088/s&lt;/td>
+&lt;td>266.15ms&lt;/td>
+&lt;td>370.17ms&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Spring webflux响应式,-u 200&lt;/td>
+&lt;td>1826.774964/s&lt;/td>
+&lt;td>109.22ms&lt;/td>
+&lt;td>127.25ms&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Spring webflux响应式,-u 400&lt;/td>
+&lt;td>3516.072783/s&lt;/td>
+&lt;td>113.35ms&lt;/td>
+&lt;td>138.09ms&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Spring webflux响应式,-u 600&lt;/td>
+&lt;td>4868.593872/s&lt;/td>
+&lt;td>122.69ms&lt;/td>
+&lt;td>160.59ms&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Spring webflux响应式,-u 800&lt;/td>
+&lt;td>5852.713635/s&lt;/td>
+&lt;td>136.14ms&lt;/td>
+&lt;td>182.87ms&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Spring webflux响应式,-u 1000&lt;/td>
+&lt;td>5994.725404/s&lt;/td>
+&lt;td>166.09ms&lt;/td>
+&lt;td>255.77ms&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Spring webflux响应式,-u 1200&lt;/td>
+&lt;td>6878.047424/s&lt;/td>
+&lt;td>173.48ms&lt;/td>
+&lt;td>278.69ms&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h3 id="总结">总结&lt;/h3>
+&lt;p>Spring WebFlux和JDK虚拟线程是两种不同的技术，用于解决不同的问题，并具有不同的使用场景。下面是它们之间的对比及使用场景：&lt;/p>
+&lt;h4 id="两者对比">两者对比&lt;/h4>
+&lt;ul>
+&lt;li>&lt;strong>异步与同步&lt;/strong>：Spring WebFlux基于非阻塞I/O和异步处理方式，适用于需要处理大量并发请求和对响应时间要求较高的场景。而JDK虚拟线程可以看作是一种用户级线程，通过协程或轻量级线程实现并发编程，适用于需要处理大量任务和对资源利用率要求较高的场景。&lt;/li>
+&lt;li>&lt;strong>编程模型&lt;/strong>：Spring WebFlux提供了注解驱动和函数式编程两种编程模型，借助Reactor库来处理异步数据流。而JDK虚拟线程通常可以使用协程库（如Quasar）或并发框架（如CompletableFuture）来实现轻量级线程的功能。&lt;/li>
+&lt;li>&lt;strong>生态系统&lt;/strong>：Spring WebFlux是Spring Framework的一部分，与其他Spring组件和工具集成紧密，丰富的生态系统给开发人员带来便利。JDK虚拟线程的生态系统相对较小，可能缺乏一些成熟的库和工具支持。&lt;/li>
+&lt;li>&lt;strong>学习曲线&lt;/strong>：Spring WebFlux相对于传统的Servlet API和阻塞I/O模型有较陡峭的学习曲线，需要开发人员学习响应式编程和相关的Reactor库。JDK虚拟线程相对较容易上手。&lt;/li>
+&lt;/ul>
+&lt;h4 id="使用场景对比">使用场景对比&lt;/h4>
+&lt;ul>
+&lt;li>使用Spring WebFlux：&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">1.需要处理大量并发请求和对响应时间有较高要求的场景。
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">2.需要利用异步处理提高系统的吞吐量和响应性能。
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">3.希望借助Spring Framework的丰富生态系统来简化开发。
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ul>
+&lt;li>使用JDK虚拟线程：&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">1.需要处理大量任务和对资源利用率有较高要求的场景。
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">2.希望通过协程或轻量级线程实现更灵活、可控的并发编程。
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">3.需要快速启动和停止线程。
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;blockquote>
+&lt;p>需要根据具体的需求和项目情况来选择适合的技术。在某些场景下，可能也可以将两者结合使用，以充分发挥各自的优势。&lt;/p>
+&lt;/blockquote></description></item></channel></rss>

@@ -1,0 +1,491 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>云原生 on 三叶草的仲夏</title><link>https://blog.xcloudapi.com/tags/%E4%BA%91%E5%8E%9F%E7%94%9F/</link><description>Recent content in 云原生 on 三叶草的仲夏</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sun, 05 Nov 2023 16:11:08 +0800</lastBuildDate><atom:link href="https://blog.xcloudapi.com/tags/%E4%BA%91%E5%8E%9F%E7%94%9F/index.xml" rel="self" type="application/rss+xml"/><item><title>Spring Native与Quarkus对比分析</title><link>https://blog.xcloudapi.com/p/spring-native%E4%B8%8Equarkus%E5%AF%B9%E6%AF%94%E5%88%86%E6%9E%90/</link><pubDate>Sun, 05 Nov 2023 16:11:08 +0800</pubDate><guid>https://blog.xcloudapi.com/p/spring-native%E4%B8%8Equarkus%E5%AF%B9%E6%AF%94%E5%88%86%E6%9E%90/</guid><description>&lt;img src="https://blog.xcloudapi.com/image/header/cover-3.jpg" alt="Featured image of post Spring Native与Quarkus对比分析" />&lt;h3 id="概述">概述&lt;/h3>
+&lt;ul>
+&lt;li>Quarkus首页放出的标语：超音速亚原子的Java（Supersonic Subatomic Java），它是为&lt;code>OpenJDK HotSpot&lt;/code>和&lt;code>GraalVM&lt;/code>量身定制的&lt;code>Kubernetes Native Java&lt;/code>框架，基于同类最佳的 Java 库和标准制作而成。&lt;/li>
+&lt;li>Quarkus的到来为开发Linux容器和 kubernetes 原生Java微服务带来了一个创新平台。&lt;/li>
+&lt;li>Spring Boot是一个基于Java的框架，专注于企业应用，它可以简单使用所有Spring项目，并集成了许多开箱即用的功能，来帮助开发人员提高生产力。&lt;/li>
+&lt;li>Spring Boot由于其约定优于配置方法，它根据依赖项自动注册默认配置，大大缩短了Java应用程序的开发周期。&lt;/li>
+&lt;li>Java生态中新兴的技术体系
+&lt;ul>
+&lt;li>Spring Reactive(Spring WebFlux) → 背靠 Pivotal → 归属 VMware → 归属戴尔&lt;/li>
+&lt;li>Quarkus 和 Vert.x → 背靠 Eclipse 基金会 → 主要由 Red Hat 支持&lt;/li>
+&lt;li>Helidon → 背靠 Oracle&lt;/li>
+&lt;li>Micronaut → 背靠 Object Computing（Grails、OpenDDS）&lt;/li>
+&lt;li>Lagom → 背靠 Lightbend（Akka）&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>本文重点关注比较热门的&lt;code>Spring Reactive&lt;/code>和&lt;code>Quarkus&lt;/code>在原生镜像方面的差异。&lt;/li>
+&lt;/ul>
+&lt;h3 id="对比分析">对比分析&lt;/h3>
+&lt;ul>
+&lt;li>&lt;strong>创新和生态系统&lt;/strong>： Spring 有着长期的历史和丰富的生态系统，许多开发者对其已经非常熟悉。Spring Native 是 Spring 团队为了更好地适应云原生环境（如 Kubernetes）而推出的新项目。相比之下，Quarkus 较新，但它在设计上就考虑了现代云原生和微服务架构，因此在某些方面可能更具创新性。&lt;/li>
+&lt;li>&lt;strong>性能和资源利用&lt;/strong>： Quarkus 和 Spring Native 都声称可以提供更快的启动时间和减少的内存占用。然而，实际表现可能会因应用程序的具体情况以及你如何使用这些框架而变化。&lt;/li>
+&lt;li>&lt;strong>开发体验&lt;/strong>： Quarkus 提供的开发模式（live coding）允许开发者在不重启应用的情况下实时看到代码改变的效果，这可能会提高开发效率。Spring Native 则继承了 Spring Boot 的开发体验，使得许多开发者能够很快上手。&lt;/li>
+&lt;li>&lt;strong>兼容性&lt;/strong>： Spring Native 对于 Spring 生态中的部分库可能还存在兼容性问题，需要按照官方给出的指引进行调整。而 Quarkus 在设计时就尽可能考虑了广泛的兼容性，包括对于 Hibernate，Apache Camel，Eclipse MicroProfile 等开源库的支持。&lt;/li>
+&lt;/ul>
+&lt;h3 id="启动构建指标对比">启动&amp;amp;构建指标对比&lt;/h3>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>指标项&lt;/th>
+&lt;th>Spring Boot Native&lt;/th>
+&lt;th>Quarkus Native&lt;/th>
+&lt;th>Spring Boot JVM&lt;/th>
+&lt;th>Quarkus JVM&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>启动耗时（秒）&lt;/td>
+&lt;td>0.244&lt;/td>
+&lt;td>0.104&lt;/td>
+&lt;td>6.156&lt;/td>
+&lt;td>2.230&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>启动内存（MB）&lt;/td>
+&lt;td>44.31&lt;/td>
+&lt;td>9.05&lt;/td>
+&lt;td>237.1&lt;/td>
+&lt;td>119.1&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>启动CPU使用率（%）&lt;/td>
+&lt;td>-&lt;/td>
+&lt;td>-&lt;/td>
+&lt;td>0.22&lt;/td>
+&lt;td>0.26&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>构建镜像大小（MB）&lt;/td>
+&lt;td>119.89&lt;/td>
+&lt;td>84.75&lt;/td>
+&lt;td>217.92&lt;/td>
+&lt;td>421.24&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>构建时长（秒）&lt;/td>
+&lt;td>592&lt;/td>
+&lt;td>444&lt;/td>
+&lt;td>90&lt;/td>
+&lt;td>17.938&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h3 id="性能测试">性能测试&lt;/h3>
+&lt;h4 id="资源版本">资源版本&lt;/h4>
+&lt;ul>
+&lt;li>Mysql: 8.0.32-1.el8&lt;/li>
+&lt;li>Quarkus: 3.2.2.Final&lt;/li>
+&lt;li>Spring Boot: 3.1.2&lt;/li>
+&lt;li>JDK: 17.0.8&lt;/li>
+&lt;li>Docker Engine: 24.0.5&lt;/li>
+&lt;li>Docker Resource: 4C/8G&lt;/li>
+&lt;/ul>
+&lt;h4 id="压测源码镜像">压测源码&amp;amp;镜像&lt;/h4>
+&lt;ul>
+&lt;li>压测源码：https://github.com/guanyang/spring-project-samples
+&lt;ul>
+&lt;li>&lt;a class="link" href="https://github.com/guanyang/spring-project-samples/tree/main/native-sample" target="_blank" rel="noopener"
+>native-sample&lt;/a>: 基于spring native构建原生镜像示例&lt;/li>
+&lt;li>&lt;a class="link" href="https://github.com/guanyang/spring-project-samples/tree/main/quarkus-sample" target="_blank" rel="noopener"
+>quarkus-sample&lt;/a>: 基于quarkus构建原生镜像示例&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>镜像资源
+&lt;ul>
+&lt;li>Quarkus Native Image: guanyangsunlight/spring-project-samples:quarkus-sample-0.0.1-SNAPSHOT&lt;/li>
+&lt;li>Quarkus JVM Image: guanyangsunlight/spring-project-samples:quarkus-sample-0.0.1-SNAPSHOT-jvm&lt;/li>
+&lt;li>Spring Boot Native Image: guanyangsunlight/spring-project-samples:native-sample-0.0.1-SNAPSHOT&lt;/li>
+&lt;li>Spring Boot JVM Image: guanyangsunlight/spring-project-samples:native-sample-0.0.1-SNAPSHOT-jvm&lt;/li>
+&lt;li>MySQL Image: guanyangsunlight/spring-project-samples:sample-mysql-8.0.32&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>Docker Compose文件
+&lt;ul>
+&lt;li>&lt;a class="link" href="https://github.com/guanyang/spring-project-samples/blob/main/quarkus-sample/src/main/docker/docker-compose.yml" target="_blank" rel="noopener"
+>quarkus-sample&lt;/a>&lt;/li>
+&lt;li>&lt;a class="link" href="https://github.com/guanyang/spring-project-samples/blob/main/native-sample/src/main/docker/docker-compose.yml" target="_blank" rel="noopener"
+>native-sample&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;h4 id="压测架构">压测架构&lt;/h4>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">graph LR
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">A(K6施压机) --&amp;gt; B(应用容器)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">B --&amp;gt;C(MySQL容器)
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ul>
+&lt;li>应用容器：&lt;code>Spring Boot Native&lt;/code>,&lt;code>Quarkus Native&lt;/code>,&lt;code>Spring Boot JVM&lt;/code>,&lt;code>Quarkus JVM&lt;/code>每个一个实例&lt;/li>
+&lt;li>MySQL容器：Mysql8.0容器实例一个&lt;/li>
+&lt;li>K6施压机: 2.2 GHz 四核Intel Core i7,16 GB 1600 MHz DDR3&lt;/li>
+&lt;li>K6参考链接：&lt;a class="link" href="https://k6.io/docs/" target="_blank" rel="noopener"
+>https://k6.io/docs/&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;h4 id="压测场景case">压测场景case&lt;/h4>
+&lt;ul>
+&lt;li>Spring Boot Native: 性能指标（QPS、RT）,机器指标（CPU、内存）&lt;/li>
+&lt;li>Quarkus Native: 性能指标（QPS、RT）,机器指标（CPU、内存）&lt;/li>
+&lt;li>Spring Boot JVM: 性能指标（QPS、RT）,机器指标（CPU、内存）&lt;/li>
+&lt;li>Quarkus JVM: 性能指标（QPS、RT）,机器指标（CPU、内存）&lt;/li>
+&lt;/ul>
+&lt;h4 id="压测服务接口">压测服务接口&lt;/h4>
+&lt;ul>
+&lt;li>接口地址：${host}/api/test/get/{id}&lt;/li>
+&lt;li>接口说明：根据id查询数据库记录，host为服务地址，id为数据库记录主键&lt;/li>
+&lt;li>响应示例：&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">{
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &amp;#34;code&amp;#34;: 200,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &amp;#34;message&amp;#34;: &amp;#34;OK&amp;#34;,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &amp;#34;data&amp;#34;: {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &amp;#34;id&amp;#34;: 4,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &amp;#34;version&amp;#34;: 1,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &amp;#34;deleted&amp;#34;: 0,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &amp;#34;createBy&amp;#34;: &amp;#34;admin&amp;#34;,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &amp;#34;updateBy&amp;#34;: &amp;#34;admin&amp;#34;,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &amp;#34;createTime&amp;#34;: 1695312514000,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &amp;#34;updateTime&amp;#34;: 1695312532000,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &amp;#34;username&amp;#34;: &amp;#34;test41&amp;#34;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h4 id="压测脚本">压测脚本&lt;/h4>
+&lt;ul>
+&lt;li>总请求时长300s，并发从50开始，并按照50步长增长，命令如下：&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">k6 run -u 50 --duration 300s -e url=http://127.0.0.1:8082/api/test/get/4 simple-test.js
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">-i：指定请求数量
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">-u：模拟并发数量
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">--duration：请求时长定义，例如：60s，1m
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">-e url：指定环境变量url，用于实际场景替换
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ul>
+&lt;li>脚本输出样例&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl"> scenarios: (100.00%) 1 scenario, 50 max VUs, 36s max duration (incl. graceful stop):
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> * default: 50 looping VUs for 6s (gracefulStop: 30s)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ✓ is status 200
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> checks.........................: 100.00% ✓ 7761 ✗ 0
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> data_received..................: 1.9 MB 324 kB/s
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> data_sent......................: 730 kB 121 kB/s
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> http_req_blocked...............: avg=12.22µs min=1µs med=3µs max=3.26ms p(90)=5µs p(95)=6µs
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> http_req_connecting............: avg=7.1µs min=0s med=0s max=2.19ms p(90)=0s p(95)=0s
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> http_req_duration..............: avg=38.56ms min=7.55ms med=34.26ms max=216.77ms p(90)=58.96ms p(95)=68.51ms
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> { expected_response:true }...: avg=38.56ms min=7.55ms med=34.26ms max=216.77ms p(90)=58.96ms p(95)=68.51ms
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> http_req_failed................: 0.00% ✓ 0 ✗ 7761
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> http_req_receiving.............: avg=52.57µs min=19µs med=46µs max=680µs p(90)=81µs p(95)=97µs
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> http_req_sending...............: avg=19.87µs min=7µs med=16µs max=1.27ms p(90)=27µs p(95)=38µs
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> http_req_tls_handshaking.......: avg=0s min=0s med=0s max=0s p(90)=0s p(95)=0s
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> http_req_waiting...............: avg=38.49ms min=7.51ms med=34.18ms max=216.58ms p(90)=58.89ms p(95)=68.46ms
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> http_reqs......................: 7761 1288.780058/s
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> iteration_duration.............: avg=38.7ms min=7.76ms med=34.4ms max=218.51ms p(90)=59.08ms p(95)=68.64ms
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> iterations.....................: 7761 1288.780058/s
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> vus............................: 50 min=50 max=50
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> vus_max........................: 50 min=50 max=50
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ul>
+&lt;li>&lt;code>simple-test.js&lt;/code>脚本说明&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;span class="lnt">8
+&lt;/span>&lt;span class="lnt">9
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-gdscript3" data-lang="gdscript3">&lt;span class="line">&lt;span class="cl">&lt;span class="n">import&lt;/span> &lt;span class="n">http&lt;/span> &lt;span class="n">from&lt;/span> &lt;span class="s1">&amp;#39;k6/http&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">import&lt;/span> &lt;span class="p">{&lt;/span> &lt;span class="n">check&lt;/span> &lt;span class="p">}&lt;/span> &lt;span class="n">from&lt;/span> &lt;span class="s1">&amp;#39;k6&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">export&lt;/span> &lt;span class="n">default&lt;/span> &lt;span class="n">function&lt;/span> &lt;span class="p">()&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">const&lt;/span> &lt;span class="n">res&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">http&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">get&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="err">`&lt;/span>&lt;span class="o">$&lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="n">__ENV&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">url&lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="err">`&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">check&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">res&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s1">&amp;#39;is status 200&amp;#39;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="n">r&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">=&amp;gt;&lt;/span> &lt;span class="n">r&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">status&lt;/span> &lt;span class="o">===&lt;/span> &lt;span class="mi">200&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">});&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h4 id="压测指标">压测指标&lt;/h4>
+&lt;h5 id="被压机器指标">被压机器指标&lt;/h5>
+&lt;ul>
+&lt;li>CPU usage&lt;/li>
+&lt;li>Memory usage&lt;/li>
+&lt;/ul>
+&lt;h5 id="被压机器性能指标">被压机器性能指标&lt;/h5>
+&lt;ul>
+&lt;li>QPS&lt;/li>
+&lt;li>Avg Latency(ms)&lt;/li>
+&lt;li>P95(ms)&lt;/li>
+&lt;/ul>
+&lt;h4 id="压测结果">压测结果&lt;/h4>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>Case&lt;/th>
+&lt;th>QPS&lt;/th>
+&lt;th>Avg Latency&lt;/th>
+&lt;th>P95&lt;/th>
+&lt;th>CPU usage&lt;/th>
+&lt;th>Memory usage&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>Quarkus Native,-u 50&lt;/td>
+&lt;td>1699.067212/s&lt;/td>
+&lt;td>29.41ms&lt;/td>
+&lt;td>50.07ms&lt;/td>
+&lt;td>136.91%&lt;/td>
+&lt;td>23.15MB&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Quarkus Native,-u 100&lt;/td>
+&lt;td>1749.35664/s&lt;/td>
+&lt;td>57.14ms&lt;/td>
+&lt;td>89.9ms&lt;/td>
+&lt;td>148.9%&lt;/td>
+&lt;td>23.95MB&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Quarkus Native,-u 200&lt;/td>
+&lt;td>1765.832527/s&lt;/td>
+&lt;td>113.23ms&lt;/td>
+&lt;td>167.43ms&lt;/td>
+&lt;td>156.17%&lt;/td>
+&lt;td>25.5MB&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Spring Boot Native,-u 50&lt;/td>
+&lt;td>1114.946899/s&lt;/td>
+&lt;td>44.82ms&lt;/td>
+&lt;td>85.11ms&lt;/td>
+&lt;td>226.5%&lt;/td>
+&lt;td>86.23MB&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Spring Boot Native,-u 100&lt;/td>
+&lt;td>1175.220721/s&lt;/td>
+&lt;td>85.06ms&lt;/td>
+&lt;td>137.26ms&lt;/td>
+&lt;td>236.07%&lt;/td>
+&lt;td>96.16MB&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Spring Boot Native,-u 200&lt;/td>
+&lt;td>1094.461679/s&lt;/td>
+&lt;td>182.67ms&lt;/td>
+&lt;td>284.98ms&lt;/td>
+&lt;td>246.32%&lt;/td>
+&lt;td>143.3MB&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Quarkus JVM,-u 50&lt;/td>
+&lt;td>2149.507697/s&lt;/td>
+&lt;td>23.24ms&lt;/td>
+&lt;td>39ms&lt;/td>
+&lt;td>111.99%&lt;/td>
+&lt;td>173.6MB&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Quarkus JVM,-u 100&lt;/td>
+&lt;td>2186.80721/s&lt;/td>
+&lt;td>45.7m&lt;/td>
+&lt;td>69.6ms&lt;/td>
+&lt;td>126.62%&lt;/td>
+&lt;td>174.2MB&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Quarkus JVM,-u 200&lt;/td>
+&lt;td>2211.63056/s&lt;/td>
+&lt;td>90.38ms&lt;/td>
+&lt;td>130.41ms&lt;/td>
+&lt;td>125.45%&lt;/td>
+&lt;td>180.1MB&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Spring Boot JVM,-u 50&lt;/td>
+&lt;td>1472.76853/s&lt;/td>
+&lt;td>33.93ms&lt;/td>
+&lt;td>65.69ms&lt;/td>
+&lt;td>199.08%&lt;/td>
+&lt;td>426.8MB&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Spring Boot JVM,-u 100&lt;/td>
+&lt;td>1624.997761/s&lt;/td>
+&lt;td>61.51ms&lt;/td>
+&lt;td>97.37ms&lt;/td>
+&lt;td>211.01%&lt;/td>
+&lt;td>427.2MB&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Spring Boot JVM,-u 200&lt;/td>
+&lt;td>1611.01646/s&lt;/td>
+&lt;td>124.05ms&lt;/td>
+&lt;td>188.24ms&lt;/td>
+&lt;td>214.96%&lt;/td>
+&lt;td>428.1MB&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h4 id="压测总结">压测总结&lt;/h4>
+&lt;ul>
+&lt;li>Quarkus Native相较于Spring Boot Native资源消耗更低，性能更好。&lt;/li>
+&lt;li>Quarkus JVM相较于Spring Boot JVM模式资源消耗更低，性能更好。&lt;/li>
+&lt;li>Native原生相较于JVM模式整体资源消耗更低，启动更快，构建镜像更小。&lt;/li>
+&lt;/ul>
+&lt;h3 id="优缺点及选型总结">优缺点及选型总结&lt;/h3>
+&lt;h4 id="quarkus优缺点">Quarkus优缺点&lt;/h4>
+&lt;ul>
+&lt;li>优点
+&lt;ul>
+&lt;li>高度优化的运行时性能和内存管理；&lt;/li>
+&lt;li>对于开发者友好的开发模式，如实时编程（live coding）；&lt;/li>
+&lt;li>广泛的兼容性，支持许多主流的 Java 开源库；&lt;/li>
+&lt;li>面向云原生应用的设计。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>缺点
+&lt;ul>
+&lt;li>相对于 Spring，其社区规模还较小，可能在某些问题上找不到即时的帮助；&lt;/li>
+&lt;li>尽管有广泛的兼容性，但并不包括所有的 Java 库。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;h4 id="spring-boot-native优缺点">Spring Boot Native优缺点&lt;/h4>
+&lt;ul>
+&lt;li>优点
+&lt;ul>
+&lt;li>建立在 Spring 生态系统之上，易于为已经使用 Spring 的团队接受；&lt;/li>
+&lt;li>与 Spring Boot 无缝集成，并且借助 GraalVM 提供媲美本机语言的启动速度和内存占用。&lt;/li>
+&lt;li>支持 AOT（Ahead-of-Time Compilation）编译，可以提高启动速度。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>缺点
+&lt;ul>
+&lt;li>使用 Spring Boot Native 需要适应其构建过程中将应用程序转化为本地应用程序的复杂性；&lt;/li>
+&lt;li>构建完成的应用程序虽然启动速度快、内存消耗低，但CPU使用率高于普通 JVM 程序。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;h4 id="技术选型思考">技术选型思考&lt;/h4>
+&lt;ul>
+&lt;li>
+&lt;p>&lt;strong>项目需求&lt;/strong>：如果项目需要快速启动，低内存消耗，那么两者都可以满足。如果已经在使用 Spring Stack，并且想要继续保持使用它，那么 Spring Boot Native 会更加合适。如果项目对开发效率有高要求，那么 Quarkus 可能更符合需求。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>团队技能&lt;/strong>：如果团队成员已经非常熟悉 Spring Stack，那么采用 Spring Boot Native 可能可以减少学习曲线。反之，如果团队愿意尝试新的技术，并且对响应式编程和函数式编程有兴趣，那么选择 Quarkus 可以是一个不错的选择。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>社区支持和文档&lt;/strong>：Spring 社区非常活跃，有大量的教程和指南。虽然 Quarkus 比较新，但也在积极扩大其社区，并提供了详细的文档。&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;blockquote>
+&lt;p>在实际决策过程中，最好能够根据具体情况进行技术选型，可能的话，可以在小规模的项目或者原型中尝试并评估这些框架。&lt;/p>
+&lt;/blockquote>
+&lt;h3 id="quarkus对spring开发者的额外好处">Quarkus对Spring开发者的额外好处&lt;/h3>
+&lt;ul>
+&lt;li>&lt;strong>功能即服务 (FaaS)&lt;/strong>：当编译为原生二进制文件时，Quarkus 应用程序可以在 0.0015 秒内启动，从而可以将现有的 Spring 和 Java API 知识与 FaaS 功能结合使用。（&lt;a class="link" href="https://quarkus.io/guides/azure-functions" target="_blank" rel="noopener"
+>Azure&lt;/a>,&lt;a class="link" href="https://quarkus.io/guides/aws-lambda" target="_blank" rel="noopener"
+>AWS Lambda&lt;/a>）&lt;/li>
+&lt;li>&lt;strong>实时编码&lt;/strong>：从“Hello World”示例应用程序开始，然后将其转换为复杂的微服务，而无需重新启动应用程序。只需保存并重新加载浏览器即可查看沿途的变化。 Quarkus 实时编码“开箱即用”，与 IDE 无关。&lt;/li>
+&lt;li>&lt;strong>支持反应式和命令式模型&lt;/strong>：Quarkus有一个反应式核心，支持传统的命令式模型、反应式模型，或在同一应用程序中同时支持两者。&lt;/li>
+&lt;li>&lt;strong>早期检测依赖注入错误&lt;/strong>：Quarkus 在编译期间而不是在运行时捕获依赖项注入错误。&lt;/li>
+&lt;li>&lt;strong>最佳框架和标准的结合&lt;/strong>：Quarkus 在同一应用程序中支持 Spring API 兼容性、Eclipse Vert.x、MicroProfile（JAX-RS、CDI 等）、反应式流和消息传递等。参考《&lt;a class="link" href="https://developers.redhat.com/blog/2019/10/02/autowire-microprofile-into-spring-with-quarkus" target="_blank" rel="noopener"
+>Autowire MicroProfile into Spring Boot&lt;/a>》，可以在一个项目中同时使用 Spring 和 MicroProfile API。&lt;/li>
+&lt;/ul>
+&lt;h3 id="参考文档">参考文档&lt;/h3>
+&lt;ul>
+&lt;li>&lt;a class="link" href="https://www.baeldung.com/spring-boot-vs-quarkus" target="_blank" rel="noopener"
+>【Baeldung】Spring Boot vs Quarkus&lt;/a>&lt;/li>
+&lt;li>&lt;a class="link" href="https://www.logicmonitor.com/blog/quarkus-vs-spring#h-about-logicmonitor" target="_blank" rel="noopener"
+>【LogicMonitor】Quarkus vs Spring Boot&lt;/a>&lt;/li>
+&lt;li>&lt;a class="link" href="https://quarkus.io/blog/quarkus-for-spring-developers/" target="_blank" rel="noopener"
+>Quarkus for Spring Developers&lt;/a>&lt;/li>
+&lt;li>&lt;a class="link" href="https://quarkus.io/guides/" target="_blank" rel="noopener"
+>Quarkus官方文档&lt;/a>&lt;/li>
+&lt;li>&lt;a class="link" href="https://quarkus.io/get-started/" target="_blank" rel="noopener"
+>Quarkus入门指南&lt;/a>&lt;/li>
+&lt;li>&lt;a class="link" href="https://code.quarkus.io/" target="_blank" rel="noopener"
+>Quarkus官方代码生成&lt;/a>&lt;/li>
+&lt;li>&lt;a class="link" href="https://docs.spring.io/spring-boot/docs/3.1.2/maven-plugin/reference/html/#build-image" target="_blank" rel="noopener"
+>Create an OCI image&lt;/a>&lt;/li>
+&lt;li>&lt;a class="link" href="https://docs.spring.io/spring-boot/docs/3.1.2/reference/html/native-image.html#native-image" target="_blank" rel="noopener"
+>GraalVM Native Image Support&lt;/a>&lt;/li>
+&lt;li>[Building a Reactive RESTful Web Service](https://spr&lt;/li>
+&lt;/ul></description></item></channel></rss>
